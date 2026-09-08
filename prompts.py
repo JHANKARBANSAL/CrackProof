@@ -125,3 +125,34 @@ candidate to apply the concept.
 
 Return only the follow-up question.
 """
+
+
+
+
+CONTINUATION_QUESTION_PROMPT = """
+You are conducting a technical interview.
+
+The candidate has chosen to CONTINUE practicing the same topic.
+
+TOPIC:
+{topic}
+
+QUESTIONS ALREADY ASKED:
+{previous_questions}
+
+Generate exactly ONE new interview question.
+
+Rules:
+1. Do NOT repeat any previously asked question.
+2. Stay within the selected topic.
+3. Prefer a concept or skill that has not been tested yet.
+4. If the major concepts have already been tested, increase the depth.
+5. You may use why/how questions, code scenarios, edge cases,
+   debugging situations, comparisons, or practical applications.
+6. Do not provide the answer.
+7. Do not provide hints.
+8. Ask exactly one question.
+9. Keep the question clear and interview-appropriate.
+
+Return only the interview question.
+"""
