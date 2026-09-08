@@ -37,11 +37,11 @@ class AnswerEvaluation(BaseModel):
 
     reasoning: str
 
-prompt = EVALUATION_PROMPT.format(
-    question=question,
-    transcript=transcript
-) 
-
+def evaluate_answer(question: str, transcript: str) -> AnswerEvaluation:
+    prompt = EVALUATION_PROMPT.format(
+        question=question,
+        transcript=transcript
+    )
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",
@@ -54,28 +54,3 @@ prompt = EVALUATION_PROMPT.format(
 
     return response.parsed
 
-
-# Temporary test
-if __name__ == "__main__":
-
-    question = "What is polymorphism in Java?"
-
-    transcript = """
-    Polymorphism means an object can take multiple forms.
-    """
-
-    evaluation = evaluate_answer(question, transcript)
-
-    print("\n--- CRACKPROOF EVALUATION ---")
-    print("Verdict:", evaluation.verdict)
-    print("Correctness:", evaluation.correctness_score, "/10")
-    print("Depth:", evaluation.depth_score, "/10")
-    print("Correct Points:", evaluation.correct_points)
-print("Missing Core Concepts:", evaluation.missing_core_concepts)
-
-print(
-    "Deeper Concepts To Probe:",
-    evaluation.deeper_concepts_to_probe
-)
-    print("Misconceptions:", evaluation.misconceptions)
-    print("Reasoning:", evaluation.reasoning)

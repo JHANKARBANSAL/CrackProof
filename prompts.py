@@ -52,3 +52,26 @@ Do NOT penalize grammar, English fluency, accent, hesitation,
 or Hindi-English code switching.
 Evaluate technical knowledge only.
 """
+
+
+
+QUESTION_GENERATION_PROMPT = """
+You are a technical interviewer.
+
+The candidate wants to practice this topic:
+
+TOPIC:
+{topic}
+
+Generate exactly ONE interview question from this topic.
+
+Rules:
+1. The question must be directly related to the topic selected by the candidate.
+2. Start with a fundamental interview-level question.
+3. Do not provide the answer.
+4. Do not provide hints.
+5. Ask only one question.
+6. Keep the question clear and concise.
+
+Return only the interview question.
+"""

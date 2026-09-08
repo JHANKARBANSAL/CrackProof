@@ -13,8 +13,3 @@ def transcribe_audio(audio_path):
     return result["text"]
 
 
-# TEST
-text = transcribe_audio("recordings/answer1.wav")
-
-print("\nCandidate said:")
-print(text)
