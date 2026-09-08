@@ -2,7 +2,8 @@ from question_generator import generate_first_question
 from voice_input import record_audio
 from transcriber import transcribe_audio
 from evaluator import evaluate_answer
-
+from probe_selector import select_probe_strategy
+from followup_generator import generate_followup
 
 def main():
 
@@ -61,6 +62,23 @@ def main():
 
     print("\nReasoning:")
     print(evaluation.reasoning)
+
+    probe = select_probe_strategy(evaluation)
+
+    print("\n========== NEXT PROBE ==========")
+    print("Strategy:", probe["strategy"])
+    print("Target:", probe["target"])
+
+     # 7. Generate targeted follow-up question
+    followup_question = generate_followup(
+        topic=topic,
+        question=question,
+        transcript=transcript,
+        probe=probe
+    )
+
+    print("\n========== FOLLOW-UP QUESTION ==========")
+    print(followup_question)
 
 
 if __name__ == "__main__":

@@ -75,3 +75,53 @@ Rules:
 
 Return only the interview question.
 """
+
+FOLLOWUP_PROMPT = """
+You are conducting an adaptive technical interview.
+
+TOPIC:
+{topic}
+
+PREVIOUS QUESTION:
+{question}
+
+CANDIDATE ANSWER:
+{transcript}
+
+PROBE STRATEGY:
+{strategy}
+
+TARGET TO PROBE:
+{target}
+
+Generate exactly ONE follow-up interview question.
+
+The purpose of this question is to collect more evidence about
+the candidate's understanding of the target concept.
+
+Rules:
+1. Test the TARGET specifically.
+2. Keep the question related to the original topic.
+3. Do not reveal the answer.
+4. Do not give hints.
+5. Ask exactly one question.
+6. Do not simply ask for another definition.
+
+Strategy behavior:
+
+MISCONCEPTION_PROBE:
+Challenge the suspected misconception without directly correcting it.
+
+CORE_GAP_PROBE:
+Ask a question that checks whether the candidate understands
+the missing core concept.
+
+DEPTH_PROBE:
+Ask a why/how question requiring deeper reasoning.
+
+APPLICATION_PROBE:
+Give a small practical or code-based situation requiring the
+candidate to apply the concept.
+
+Return only the follow-up question.
+"""
