@@ -1,17 +1,27 @@
-import os
 from typing import Literal
 
-from dotenv import load_dotenv
-from google import genai
-from google.genai import types
 from pydantic import BaseModel, Field
 from prompts import EVALUATION_PROMPT
+from llm_client import ask_llm
 
+# 👇 YAHA ADD KARO
+class DepthEvidence(BaseModel):
+    evidence_type: Literal[
+        "FUNDAMENTAL",
+        "REASONING",
+        "APPLICATION",
+        "EDGE_CASE"
+    ]
 
-# Load GEMINI_API_KEY from .env
-load_dotenv()
+    # Three-state, because one dimension can be partly right and
+    # partly wrong within a single answer.
+    status: Literal[
+        "DEMONSTRATED",
+        "PARTIALLY_DEMONSTRATED",
+        "NOT_DEMONSTRATED"
+    ]
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+    evidence_from_answer: str
 
 
 # Structure in which we want Gemini's evaluation
@@ -34,23 +44,18 @@ class AnswerEvaluation(BaseModel):
     deeper_concepts_to_probe: list[str]
 
     misconceptions: list[str]
-
+    evidence: list[DepthEvidence]
     reasoning: str
 
-def evaluate_answer(question: str, transcript: str) -> AnswerEvaluation:
+def evaluate_answer(question: str, transcript: str):
+    """
+    Returns an AnswerEvaluation, or None if the model could not be
+    reached. The caller must check for None.
+    """
+
     prompt = EVALUATION_PROMPT.format(
         question=question,
         transcript=transcript
     )
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema=AnswerEvaluation,
-        ),
-    )
-
-    return response.parsed
-
+    return ask_llm(prompt, schema=AnswerEvaluation)

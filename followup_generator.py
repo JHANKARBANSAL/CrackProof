@@ -1,16 +1,11 @@
-import os
-from dotenv import load_dotenv
-from google import genai
 from prompts import FOLLOWUP_PROMPT
-
-load_dotenv()
-
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+from llm_client import ask_llm
 
 
 def generate_followup(topic, question, transcript, probe):
+    """
+    Returns the next question as text, or None if the model failed.
+    """
 
     prompt = FOLLOWUP_PROMPT.format(
         topic=topic,
@@ -20,9 +15,4 @@ def generate_followup(topic, question, transcript, probe):
         target=probe["target"]
     )
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-
-    return response.text.strip()
+    return ask_llm(prompt)

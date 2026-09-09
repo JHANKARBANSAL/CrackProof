@@ -1,14 +1,26 @@
-import os
-from dotenv import load_dotenv
-from google import genai
-from prompts import QUESTION_GENERATION_PROMPT, CONTINUATION_QUESTION_PROMPT
+from prompts import (
+    QUESTION_GENERATION_PROMPT,
+    CONTINUATION_QUESTION_PROMPT
+)
+from llm_client import ask_llm
 
 
-load_dotenv()
+def generate_first_question(topic):
+    """
+    Returns the first question as text, or None if the model failed.
+    """
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+    prompt = QUESTION_GENERATION_PROMPT.format(
+        topic=topic
+    )
+
+    return ask_llm(prompt)
+
 
 def generate_continuation_question(topic, interview_history):
+    """
+    Returns a new question on the same topic, or None if the model failed.
+    """
 
     previous_questions = []
 
@@ -28,25 +40,7 @@ def generate_continuation_question(topic, interview_history):
         previous_questions=formatted_questions
     )
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-
-    return response.text.strip()
-
-def generate_first_question(topic):
-
-    prompt = QUESTION_GENERATION_PROMPT.format(
-        topic=topic
-    )
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-
-    return response.text.strip()
+    return ask_llm(prompt)
 
 
 if __name__ == "__main__":
