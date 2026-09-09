@@ -1,3 +1,5 @@
 .env
 recordings
-voice_input.py
+__pycache__/
+*.pyc
+venv/
