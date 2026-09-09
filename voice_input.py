@@ -32,8 +32,19 @@ def record_audio(filename="recordings/answer1.wav"):
     print("Press ENTER when you want to STOP.\n")
 
 
+    # device=None matlab system ka default microphone.
+    # Pehle device=0 hardcoded tha, jisse headphone lagane par
+    # index badal jaata tha aur recording toot jaati thi.
+    # .env mein MIC_DEVICE=2 likhkar koi khaas mic chun sakti ho.
+    device = os.getenv("MIC_DEVICE")
+
+    if device is not None and device.strip() != "":
+        device = int(device)
+    else:
+        device = None
+
     with sd.InputStream(
-        device=0,              # Your MacBook Air Microphone
+        device=device,
         samplerate=sample_rate,
         channels=1,
         dtype="float32",
