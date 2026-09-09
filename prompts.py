@@ -140,6 +140,12 @@ WRONG output — never do this:
 
 FUNDAMENTAL / DEMONSTRATED
 FUNDAMENTAL / NOT_DEMONSTRATED
+
+
+CITATIONS:
+
+Leave the citations field as an empty list unless REFERENCE MATERIAL
+is supplied below. Never cite a source you were not given.
 """
 
 
@@ -272,6 +278,22 @@ IMPORTANT: This reference may be incomplete. If the candidate says
 something correct that is not covered here, do NOT mark it wrong.
 Only list a missing core concept when the reference shows it is
 genuinely required to answer THIS question.
+
+CITATIONS:
+
+Now that you have been given reference material, fill in the citations
+field. Add one citation for every missing_core_concept and every
+misconception you listed, so the candidate can check the claim.
+
+For each citation:
+- claim   = the exact missing concept or misconception text you used
+- section = the section heading shown above the passage that supports
+            it, copied exactly, for example
+            "Database normalization / Objectives"
+
+Only cite a section that is actually shown above. If nothing above
+supports a claim, leave that claim out of citations rather than
+inventing a source.
 """
 
 

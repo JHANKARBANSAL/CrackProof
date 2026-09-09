@@ -416,10 +416,27 @@ def main():
             else:
                 print("- None")
 
+            # Kaunsi baat ka kaunsa source hai, dhoondhne ke liye
+            citation_for = {}
+            for citation in evaluation.citations:
+                citation_for[citation.claim.strip().lower()] = (
+                    citation.section
+                )
+
+            def print_with_source(item):
+                """Ek line print karo, source mile to uske saath."""
+
+                print("-", item)
+
+                source = citation_for.get(item.strip().lower())
+
+                if source:
+                    print("    source:", source)
+
             print("\nMissing Core Concepts:")
             if evaluation.missing_core_concepts:
                 for concept in evaluation.missing_core_concepts:
-                    print("-", concept)
+                    print_with_source(concept)
             else:
                 print("- None")
 
@@ -433,7 +450,7 @@ def main():
             print("\nMisconceptions:")
             if evaluation.misconceptions:
                 for misconception in evaluation.misconceptions:
-                    print("-", misconception)
+                    print_with_source(misconception)
             else:
                 print("- None")
 

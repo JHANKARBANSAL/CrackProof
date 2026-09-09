@@ -24,6 +24,20 @@ class DepthEvidence(BaseModel):
     evidence_from_answer: str
 
 
+class Citation(BaseModel):
+    """
+    Ek claim aur uska source.
+
+    Isse candidate poochh sake "ye kahan likha hai?" aur jawab mil jaye.
+    """
+
+    # Kaunsi baat - jaise ek missing concept ya misconception
+    claim: str
+
+    # Reference ka kaunsa hissa ise support karta hai
+    section: str
+
+
 # Structure in which we want Gemini's evaluation
 class AnswerEvaluation(BaseModel):
     verdict: Literal[
@@ -45,6 +59,11 @@ class AnswerEvaluation(BaseModel):
 
     misconceptions: list[str]
     evidence: list[DepthEvidence]
+
+    # Har claim ke peeche reference ka kaunsa hissa hai.
+    # Reference na diya ho to ye khaali rehti hai.
+    citations: list[Citation]
+
     reasoning: str
 
 def evaluate_answer(question: str, transcript: str, reference: str = ""):
