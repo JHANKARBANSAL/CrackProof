@@ -1,6 +1,10 @@
 .env
 recordings
-knowledge
 __pycache__/
 *.pyc
 venv/
+
+# knowledge/ ka auto-downloaded content ignore, par haath se likhi
+# rubrics track hongi - woh dobara download nahi hotin
+knowledge/*
+!knowledge/rubrics

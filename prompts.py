@@ -247,6 +247,18 @@ Return only the interview question.
 """
 
 
+RUBRIC_BLOCK = """
+
+HOW TO JUDGE DEPTH EVIDENCE:
+
+The rubric below defines what each status means for each dimension.
+It is based on the SOLO taxonomy (Biggs & Collis, 1982), a published
+framework for judging the quality of understanding. Apply it exactly.
+
+{rubric}
+"""
+
+
 GROUNDING_BLOCK = """
 
 REFERENCE MATERIAL:
