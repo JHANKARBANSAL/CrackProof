@@ -1,0 +1,105 @@
+[
+  {
+    "subject": "OOP",
+    "question": "What are the four fundamental principles of object-oriented programming, and can you briefly explain each one?",
+    "expected_files": [
+      "object_oriented_programming.md",
+      "encapsulation_computer_programming.md",
+      "inheritance_object_oriented_programming.md",
+      "polymorphism_computer_science.md",
+      "abstraction_computer_science.md"
+    ]
+  },
+  {
+    "subject": "OOP",
+    "question": "In object-oriented programming, what is the difference between inheritance and composition?",
+    "expected_files": [
+      "composition_over_inheritance.md",
+      "inheritance_object_oriented_programming.md"
+    ]
+  },
+  {
+    "subject": "JAVA",
+    "question": "What is the difference between the `==` operator and the `equals()` method when comparing objects in Java?",
+    "expected_files": [
+      "string_interning.md",
+      "java_programming_language.md",
+      "immutable_object.md"
+    ]
+  },
+  {
+    "subject": "JAVA",
+    "question": "What is the difference between the JDK, JRE, and JVM in Java?",
+    "expected_files": [
+      "java_virtual_machine.md",
+      "java_programming_language.md",
+      "java_class_library.md"
+    ]
+  },
+  {
+    "subject": "DBMS",
+    "question": "What are the ACID properties of a database transaction, and why is each property important?",
+    "expected_files": [
+      "acid.md",
+      "database_transaction.md"
+    ]
+  },
+  {
+    "subject": "DBMS",
+    "question": "What are the ACID properties of a transaction in a DBMS, and why are they important?",
+    "expected_files": [
+      "acid.md",
+      "database_transaction.md"
+    ]
+  },
+  {
+    "subject": "OS",
+    "question": "What is the difference between a process and a thread, and how does the operating system manage them?",
+    "expected_files": [
+      "process_computing.md",
+      "thread_computing.md"
+    ]
+  },
+  {
+    "subject": "OS",
+    "question": "Explain the difference between a process and a thread, and how the operating system manages each.",
+    "expected_files": [
+      "process_computing.md",
+      "thread_computing.md"
+    ]
+  },
+  {
+    "subject": "CN",
+    "question": "What is the difference between TCP and UDP, and in what scenarios would you choose each one?",
+    "expected_files": [
+      "transmission_control_protocol.md",
+      "user_datagram_protocol.md"
+    ]
+  },
+  {
+    "subject": "CN",
+    "question": "What is the primary function of the transport layer in the OSI model, and how does it differ from the network layer?",
+    "expected_files": [
+      "osi_model.md",
+      "transmission_control_protocol.md",
+      "internet_protocol_suite.md"
+    ]
+  },
+  {
+    "subject": "DSA",
+    "question": "Given a singly linked list, design an algorithm to determine whether it contains a cycle.",
+    "expected_files": [
+      "linked_list.md",
+      "algorithm.md"
+    ]
+  },
+  {
+    "subject": "DSA",
+    "question": "Explain how you would implement a queue using two stacks, and analyze the time complexity.",
+    "expected_files": [
+      "queue_abstract_data_type.md",
+      "stack_abstract_data_type.md",
+      "big_o_notation.md"
+    ]
+  }
+]
