@@ -13,6 +13,7 @@ from probe_selector import select_probe_strategy
 from followup_generator import generate_followup
 from depth_aggregator import aggregate_depth_evidence
 from llm_client import describe as describe_llm
+from grounding import get_reference
 from assessment_metrics import calculate_batch_metrics
 from assessment_generator import generate_final_assessment
 
@@ -366,9 +367,27 @@ def main():
             # 3. EVALUATE ANSWER
             # ---------------------------------------
 
+            # Knowledge base se is sawaal ka reference text laao.
+            # Na mile to khaali aayega aur evaluation waise hi
+            # chalegi jaise pehle chalti thi.
+            reference, sources = get_reference(question, topic)
+
+            if sources:
+                print("\nReference used:")
+                for source in sources:
+                    print(
+                        "-", source["title"],
+                        "/", source["section"],
+                        "(score", str(source["score"]) + ")"
+                    )
+            else:
+                print("\nReference: none found "
+                      "(evaluating without grounding)")
+
             evaluation = evaluate_answer(
                 question=question,
-                transcript=transcript
+                transcript=transcript,
+                reference=reference
             )
 
             if evaluation is None:
@@ -467,7 +486,13 @@ def main():
                 "evaluation": evaluation,
                 "probe_strategy": probe["strategy"],
                 "probe_target": probe["target"],
-                "audio_file": audio_file
+                "audio_file": audio_file,
+
+                # Ye evaluation reference ke saath hui thi ya nahi.
+                # Baad mein naap sakte hain ki grounding se farak
+                # pada ya nahi.
+                "grounded": bool(sources),
+                "reference_sources": sources
             })
 
             # Save immediately so this answer cannot be lost

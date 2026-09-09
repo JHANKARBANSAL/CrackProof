@@ -36,6 +36,7 @@ def evaluate(retriever, name, top_k=3, use_subject=True, show=True):
     queries = load_test_queries()
 
     hits = 0
+    useful_chunks = 0
     total_correct_results = 0
     total_results = 0
 
@@ -76,7 +77,27 @@ def evaluate(retriever, name, top_k=3, use_subject=True, show=True):
                 "got": found_files,
             })
 
+        # ASLI SAWAAL: laaye hue tukde mein jawab hai bhi ya nahi?
+        # Sahi file aa jaana kaafi nahi - galat section aa sakta hai.
+        wanted_words = query.get("expected_keywords", [])
+
+        if wanted_words:
+
+            all_text = ""
+            for result in results:
+                all_text = all_text + " " + result["text"].lower()
+
+            found_words = 0
+            for word in wanted_words:
+                if word.lower() in all_text:
+                    found_words = found_words + 1
+
+            # Aadhe se zyada keyword mil gaye to tukda kaam ka hai
+            if found_words >= (len(wanted_words) + 1) // 2:
+                useful_chunks = useful_chunks + 1
+
     recall = hits / len(queries) if queries else 0
+    usefulness = useful_chunks / len(queries) if queries else 0
     precision = (
         total_correct_results / total_results if total_results else 0
     )
@@ -96,6 +117,11 @@ def evaluate(retriever, name, top_k=3, use_subject=True, show=True):
               + str(total_correct_results) + "/" + str(total_results)
               + "  = " + str(round(precision * 100)) + "%")
 
+        print("  USEFUL     : "
+              + str(useful_chunks) + "/" + str(len(queries))
+              + "  = " + str(round(usefulness * 100)) + "%"
+              + "   (tukde mein asli jawab tha?)")
+
         if misses:
             print("\n  Ye sawaal miss hue:")
             for miss in misses:
@@ -107,6 +133,7 @@ def evaluate(retriever, name, top_k=3, use_subject=True, show=True):
         "name": name,
         "recall": recall,
         "precision": precision,
+        "usefulness": usefulness,
         "hits": hits,
         "total": len(queries),
     }
@@ -115,20 +142,21 @@ def evaluate(retriever, name, top_k=3, use_subject=True, show=True):
 def main():
 
     from retriever_bm25 import BM25Retriever
+    from retriever_embed import EmbeddingRetriever
 
     print("\nBM25 taiyaar kar raha hoon...")
-
     bm25 = BM25Retriever()
-
     print("Tukde:", len(bm25.chunks))
+
+    print("\nEmbedding retriever taiyaar kar raha hoon...")
+    dense = EmbeddingRetriever()
 
     scores = []
 
-    scores.append(evaluate(bm25, "BM25", top_k=3, use_subject=True))
-    scores.append(evaluate(bm25, "BM25", top_k=5, use_subject=True))
-    scores.append(
-        evaluate(bm25, "BM25", top_k=3, use_subject=False, show=False)
-    )
+    scores.append(evaluate(bm25, "BM25     ", top_k=3))
+    scores.append(evaluate(dense, "EMBEDDING", top_k=3))
+    scores.append(evaluate(bm25, "BM25     ", top_k=5, show=False))
+    scores.append(evaluate(dense, "EMBEDDING", top_k=5, show=False))
 
     print("\n\n" + "=" * 55)
     print("SUMMARY")
@@ -137,7 +165,8 @@ def main():
     for score in scores:
         print("  " + score["name"]
               + "  recall " + str(round(score["recall"] * 100)) + "%"
-              + "  precision " + str(round(score["precision"] * 100)) + "%")
+              + "  precision " + str(round(score["precision"] * 100)) + "%"
+              + "  USEFUL " + str(round(score["usefulness"] * 100)) + "%")
 
 
 if __name__ == "__main__":

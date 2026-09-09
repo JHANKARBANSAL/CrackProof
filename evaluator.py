@@ -1,7 +1,7 @@
 from typing import Literal
 
 from pydantic import BaseModel, Field
-from prompts import EVALUATION_PROMPT
+from prompts import EVALUATION_PROMPT, GROUNDING_BLOCK
 from llm_client import ask_llm
 
 # 👇 YAHA ADD KARO
@@ -47,15 +47,23 @@ class AnswerEvaluation(BaseModel):
     evidence: list[DepthEvidence]
     reasoning: str
 
-def evaluate_answer(question: str, transcript: str):
+def evaluate_answer(question: str, transcript: str, reference: str = ""):
     """
     Returns an AnswerEvaluation, or None if the model could not be
     reached. The caller must check for None.
+
+    reference is optional text from the knowledge base. When it is
+    given, the model judges the answer against that text instead of
+    from memory. When it is empty the behaviour is exactly as before,
+    so a retrieval failure never stops the interview.
     """
 
     prompt = EVALUATION_PROMPT.format(
         question=question,
         transcript=transcript
     )
+
+    if reference:
+        prompt = prompt + GROUNDING_BLOCK.format(reference=reference)
 
     return ask_llm(prompt, schema=AnswerEvaluation)

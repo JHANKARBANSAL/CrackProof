@@ -8,6 +8,12 @@
       "inheritance_object_oriented_programming.md",
       "polymorphism_computer_science.md",
       "abstraction_computer_science.md"
+    ],
+    "expected_keywords": [
+      "encapsulat",
+      "inherit",
+      "polymorph",
+      "abstract"
     ]
   },
   {
@@ -16,6 +22,10 @@
     "expected_files": [
       "composition_over_inheritance.md",
       "inheritance_object_oriented_programming.md"
+    ],
+    "expected_keywords": [
+      "composition",
+      "inherit"
     ]
   },
   {
@@ -25,6 +35,12 @@
       "string_interning.md",
       "java_programming_language.md",
       "immutable_object.md"
+    ],
+    "expected_keywords": [
+      "reference",
+      "equal",
+      "identity",
+      "intern"
     ]
   },
   {
@@ -34,6 +50,12 @@
       "java_virtual_machine.md",
       "java_programming_language.md",
       "java_class_library.md"
+    ],
+    "expected_keywords": [
+      "jvm",
+      "virtual machine",
+      "bytecode",
+      "runtime"
     ]
   },
   {
@@ -42,6 +64,12 @@
     "expected_files": [
       "acid.md",
       "database_transaction.md"
+    ],
+    "expected_keywords": [
+      "atomic",
+      "consisten",
+      "isolat",
+      "durab"
     ]
   },
   {
@@ -50,6 +78,12 @@
     "expected_files": [
       "acid.md",
       "database_transaction.md"
+    ],
+    "expected_keywords": [
+      "atomic",
+      "consisten",
+      "isolat",
+      "durab"
     ]
   },
   {
@@ -58,6 +92,12 @@
     "expected_files": [
       "process_computing.md",
       "thread_computing.md"
+    ],
+    "expected_keywords": [
+      "thread",
+      "process",
+      "address space",
+      "concurren"
     ]
   },
   {
@@ -66,6 +106,12 @@
     "expected_files": [
       "process_computing.md",
       "thread_computing.md"
+    ],
+    "expected_keywords": [
+      "thread",
+      "process",
+      "address space",
+      "concurren"
     ]
   },
   {
@@ -74,6 +120,13 @@
     "expected_files": [
       "transmission_control_protocol.md",
       "user_datagram_protocol.md"
+    ],
+    "expected_keywords": [
+      "reliab",
+      "connection",
+      "datagram",
+      "handshake",
+      "ordered"
     ]
   },
   {
@@ -83,6 +136,12 @@
       "osi_model.md",
       "transmission_control_protocol.md",
       "internet_protocol_suite.md"
+    ],
+    "expected_keywords": [
+      "transport layer",
+      "end-to-end",
+      "segment",
+      "port"
     ]
   },
   {
@@ -91,6 +150,13 @@
     "expected_files": [
       "linked_list.md",
       "algorithm.md"
+    ],
+    "expected_keywords": [
+      "linked list",
+      "node",
+      "pointer",
+      "cycle",
+      "traversal"
     ]
   },
   {
@@ -100,6 +166,14 @@
       "queue_abstract_data_type.md",
       "stack_abstract_data_type.md",
       "big_o_notation.md"
+    ],
+    "expected_keywords": [
+      "queue",
+      "stack",
+      "fifo",
+      "lifo",
+      "amortized",
+      "complexity"
     ]
   }
 ]

@@ -247,6 +247,22 @@ Return only the interview question.
 """
 
 
+GROUNDING_BLOCK = """
+
+REFERENCE MATERIAL:
+
+The text below comes from a reference source on this topic. Judge the
+candidate's answer against this material rather than from memory.
+
+{reference}
+
+IMPORTANT: This reference may be incomplete. If the candidate says
+something correct that is not covered here, do NOT mark it wrong.
+Only list a missing core concept when the reference shows it is
+genuinely required to answer THIS question.
+"""
+
+
 FINAL_ASSESSMENT_PROMPT = """
 You are generating a technical interview assessment from evidence
 that has ALREADY been collected during a five-question interview.
