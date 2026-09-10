@@ -53,5 +53,8 @@ been removed. The report now shows only what the backend actually
 returns: the `overall_readiness` label, and `average_correctness_score`
 and `average_depth_score` as two separate bars out of 10.
 
+## DEployed link
+Available at your primary URL https://crackproof.onrender.com
+
 If a single headline number is ever wanted, compute it in Python
 alongside the other metrics. Never derive it in the UI.
