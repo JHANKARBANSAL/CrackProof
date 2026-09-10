@@ -179,13 +179,16 @@ def main():
                 # 2. SPEECH -> TEXT
                 # ---------------------------------------
 
-                transcript = transcribe_audio(audio_file)
+                transcript, problem = transcribe_audio(audio_file)
 
-                if transcript and transcript.strip():
+                if problem is None:
                     break
 
+                # Transcript bharose ke laayak nahi hai. Wajah batao
+                # aur wahi sawaal dobara record karwao. Ye ek poora
+                # sawaal nahi ginta, isliye numbering nahi hilti.
+                print("\n" + problem)
                 print(
-                    "\nNo speech could be transcribed. "
                     "Please record the answer again."
                 )
 
