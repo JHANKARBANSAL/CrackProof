@@ -188,7 +188,11 @@ tbody tr:hover{background:var(--card-2)}
 .rep-head{display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:24px}
 .rep-cols{display:grid; grid-template-columns:1.15fr .85fr; gap:22px}
 .readiness{padding:22px 24px}
-.rbar{height:9px; border-radius:5px; background:var(--line); overflow:hidden; margin:12px 0 6px}
+.scores{display:flex; flex-direction:column; gap:13px; margin:18px 0 4px}
+.score-top{display:flex; justify-content:space-between; align-items:baseline; font-size:.87rem; margin-bottom:6px}
+.score-top b{font-variant-numeric:tabular-nums; font-weight:700}
+.score-top .muted{font-weight:500}
+.rbar{display:block; height:9px; border-radius:5px; background:var(--line); overflow:hidden}
 .rbar i{display:block; height:100%; background:var(--green); border-radius:5px}
 .notice{display:flex; gap:11px; padding:14px 16px; border-radius:var(--r-s); background:var(--blue-l); color:var(--blue-t); font-size:.88rem; line-height:1.5}
 .origin{display:inline-flex; align-items:center; gap:5px; font-size:.71rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3)}
@@ -532,12 +536,19 @@ tbody tr:hover{background:var(--card-2)}
         <div style="display:flex; flex-direction:column; gap:22px">
           <div class="card readiness">
             <p class="eyebrow">Overall readiness</p>
-            <div style="display:flex; align-items:baseline; gap:12px; margin-top:8px">
-              <h2 style="font-size:1.5rem; color:var(--green)">Almost Ready</h2>
-              <span class="muted" style="margin-left:auto; font-weight:700; font-variant-numeric:tabular-nums">72/100</span>
+            <h2 style="font-size:1.5rem; color:var(--green); margin-top:8px">Almost Ready</h2>
+            <p class="small muted" style="margin-top:2px">In this interview only — not a measure of you.</p>
+
+            <div class="scores">
+              <div>
+                <div class="score-top"><span>Correctness</span><b>6.4 <span class="muted">/ 10</span></b></div>
+                <span class="rbar"><i style="width:64%"></i></span>
+              </div>
+              <div>
+                <div class="score-top"><span>Depth</span><b>5.2 <span class="muted">/ 10</span></b></div>
+                <span class="rbar"><i style="width:52%"></i></span>
+              </div>
             </div>
-            <div class="rbar"><i style="width:72%"></i></div>
-            <p class="small muted">In this interview only — not a measure of you.</p>
             <p class="small" style="margin-top:14px; line-height:1.65">"You have a solid understanding of core concepts. Focus on normalization and transaction management to strengthen your depth."</p>
             <p class="origin" style="margin-top:10px">✦ Written by AI</p>
           </div>

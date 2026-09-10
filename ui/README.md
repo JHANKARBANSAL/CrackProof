@@ -45,10 +45,13 @@ redesign:
 - Citations show a real source link and are never hidden behind a
   hover or a modal.
 
-## Open question
+## Resolved: the 0-100 figure is gone
 
-The report shows a 0-100 readiness figure. The backend does not
-produce one. It produces `overall_readiness` (STRONG / DEVELOPING /
-NEEDS_IMPROVEMENT) plus `average_correctness_score` and
-`average_depth_score`, both out of 10. Either drop the 0-100 figure or
-derive it from those two in Python. Do not compute it in the UI.
+An earlier draft showed "72/100" on the report. The backend never
+produced that number, so the UI would have been inventing it. It has
+been removed. The report now shows only what the backend actually
+returns: the `overall_readiness` label, and `average_correctness_score`
+and `average_depth_score` as two separate bars out of 10.
+
+If a single headline number is ever wanted, compute it in Python
+alongside the other metrics. Never derive it in the UI.
