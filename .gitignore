@@ -8,3 +8,11 @@ venv/
 # rubrics track hongi - woh dobara download nahi hotin
 knowledge/*
 !knowledge/rubrics
+
+# web backend banne ke baad ye banengi
+*.db
+*.sqlite3
+uploads/
+
+# macOS ka kachra
+.DS_Store
