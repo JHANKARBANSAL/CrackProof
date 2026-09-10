@@ -1,8 +1,15 @@
 """
-User accounts aur unke interviews - SQLite mein.
+User accounts aur unke interviews.
 
-SQLite Python ke saath hi aata hai. Kuch install nahi karna, koi
-server nahi chalana. Sab kuch ek file mein: crackproof.db
+Do jagah chal sakta hai, aur khud pata laga leta hai kaunsi:
+
+    .env mein DATABASE_URL hai   ->  Supabase (Postgres)
+    nahi hai                     ->  crackproof.db (SQLite)
+
+Isliye laptop par bina kisi setup ke chalta rehta hai, aur server par
+Supabase use karta hai - jahan data restart ke baad bhi bacha rehta
+hai. Free hosting ka disk har restart par saaf ho jaata hai, isliye
+wahan SQLite mein rakha data agli baar nahi milta.
 
 Password kabhi plain text mein save nahi hota. Sirf uska hash rakha
 jaata hai, jisse password wapas nikalna possible nahi.
@@ -18,24 +25,78 @@ import json
 import os
 import sqlite3
 
+from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+load_dotenv()
+
 DB_FILE = "crackproof.db"
+
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+
+
+def using_postgres():
+    """Supabase use karna hai ya laptop ki SQLite file."""
+
+    return DATABASE_URL != ""
+
+
+def q(sql):
+    """
+    Query ko sahi database ke hisaab se theek karta hai.
+
+    SQLite sawaal ke nishan maangta hai:   WHERE id = ?
+    Postgres percent-s maangta hai:        WHERE id = %s
+
+    Isliye saari queries "?" ke saath likhi hain, aur zaroorat padne
+    par yahan badal jaati hain. Isse har query do baar likhne se bach
+    jaate hain.
+    """
+
+    if using_postgres():
+        return sql.replace("?", "%s")
+
+    return sql
 
 
 def connect():
     """
     Database se connection.
 
-    row_factory set karne se rows dictionary jaise kaam karte hain,
-    yaani row["email"] likh sakte hain, row[1] nahi.
+    Dono taraf rows dictionary jaise kaam karte hain, yaani
+    row["email"] likh sakte hain, row[1] nahi.
     """
+
+    if using_postgres():
+
+        import psycopg2
+        import psycopg2.extras
+
+        return psycopg2.connect(
+            DATABASE_URL,
+            cursor_factory=psycopg2.extras.RealDictCursor
+        )
 
     connection = sqlite3.connect(DB_FILE)
     connection.row_factory = sqlite3.Row
 
     return connection
+
+
+def run(connection, sql, values=()):
+    """
+    Ek query chalata hai aur cursor deta hai.
+
+    SQLite mein connection.execute() seedha chal jaata hai, par
+    Postgres mein cursor banana padta hai. Ye dono ko ek jaisa
+    bana deta hai, taaki neeche ka code do baar na likhna pade.
+    """
+
+    cursor = connection.cursor()
+    cursor.execute(q(sql), values)
+
+    return cursor
 
 
 def setup():
@@ -45,48 +106,54 @@ def setup():
     Har baar chalana safe hai - "IF NOT EXISTS" ka yahi matlab hai.
     """
 
+    # Auto-badhne wali id dono jagah alag likhi jaati hai
+    if using_postgres():
+        auto_id = "SERIAL PRIMARY KEY"
+        now = "CURRENT_TIMESTAMP"
+    else:
+        auto_id = "INTEGER PRIMARY KEY AUTOINCREMENT"
+        now = "CURRENT_TIMESTAMP"
+
     connection = connect()
 
-    connection.execute("""
+    run(connection, """
         CREATE TABLE IF NOT EXISTS users (
-            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            id            """ + auto_id + """,
             email         TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            created_at    TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at    TEXT NOT NULL DEFAULT """ + now + """
         )
     """)
 
-    connection.execute("""
+    run(connection, """
         CREATE TABLE IF NOT EXISTS interviews (
-            id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+            id                 """ + auto_id + """,
             user_id            INTEGER NOT NULL,
             interview_id       TEXT NOT NULL,
             topic              TEXT NOT NULL,
             questions_answered INTEGER NOT NULL DEFAULT 0,
             readiness          TEXT,
             report_json        TEXT,
-            created_at         TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            created_at         TEXT NOT NULL DEFAULT """ + now + """
         )
     """)
 
     # Har evaluation par candidate ki raay: judgement sahi tha ya nahi.
     # Ye dheere-dheere labelled data banata hai - agar kabhi apna model
     # train karna ho, to yahi uska sach hoga.
-    connection.execute("""
+    run(connection, """
         CREATE TABLE IF NOT EXISTS feedback (
-            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            id              """ + auto_id + """,
             user_id         INTEGER,
             interview_id    TEXT NOT NULL,
             question_number INTEGER NOT NULL,
             was_fair        INTEGER NOT NULL,
-            created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at      TEXT NOT NULL DEFAULT """ + now + """
         )
     """)
 
     # Ek user ke interviews jaldi mil jayein
-    connection.execute("""
+    run(connection, """
         CREATE INDEX IF NOT EXISTS interviews_by_user
         ON interviews (user_id, created_at DESC)
     """)
@@ -117,17 +184,38 @@ def create_user(email, password):
     connection = connect()
 
     try:
-        cursor = connection.execute(
-            "INSERT INTO users (email, password_hash) VALUES (?, ?)",
-            (email, generate_password_hash(password))
-        )
+        if using_postgres():
+            # Postgres lastrowid nahi deta, isliye nayi id maang lete hain
+            cursor = run(
+                connection,
+                "INSERT INTO users (email, password_hash)"
+                " VALUES (?, ?) RETURNING id",
+                (email, generate_password_hash(password))
+            )
+            new_id = cursor.fetchone()["id"]
+        else:
+            cursor = run(
+                connection,
+                "INSERT INTO users (email, password_hash) VALUES (?, ?)",
+                (email, generate_password_hash(password))
+            )
+            new_id = cursor.lastrowid
+
         connection.commit()
 
-        return cursor.lastrowid, None
+        return new_id, None
 
-    except sqlite3.IntegrityError:
-        # email UNIQUE hai, isliye dobara daalne par yahan aayenge
-        return None, "An account with that email already exists."
+    except Exception as error:
+        # email UNIQUE hai, isliye dobara daalne par yahan aayenge.
+        # SQLite ise IntegrityError kehta hai, Postgres UniqueViolation.
+        connection.rollback()
+
+        name = type(error).__name__
+
+        if "Integrity" in name or "Unique" in name:
+            return None, "An account with that email already exists."
+
+        raise
 
     finally:
         connection.close()
@@ -147,7 +235,8 @@ def check_login(email, password):
 
     connection = connect()
 
-    row = connection.execute(
+    row = run(
+        connection,
         "SELECT * FROM users WHERE email = ?", (email,)
     ).fetchone()
 
@@ -167,7 +256,8 @@ def get_user(user_id):
 
     connection = connect()
 
-    row = connection.execute(
+    row = run(
+        connection,
         "SELECT id, email, created_at FROM users WHERE id = ?", (user_id,)
     ).fetchone()
 
@@ -195,7 +285,8 @@ def save_interview(user_id, interview_id, topic, report):
 
     connection = connect()
 
-    existing = connection.execute(
+    existing = run(
+        connection,
         "SELECT id FROM interviews WHERE user_id = ? AND interview_id = ?",
         (user_id, interview_id)
     ).fetchone()
@@ -208,7 +299,8 @@ def save_interview(user_id, interview_id, topic, report):
     )
 
     if existing:
-        connection.execute(
+        run(
+            connection,
             """UPDATE interviews
                SET topic = ?, questions_answered = ?, readiness = ?,
                    report_json = ?
@@ -216,7 +308,8 @@ def save_interview(user_id, interview_id, topic, report):
             values + (existing["id"],)
         )
     else:
-        connection.execute(
+        run(
+            connection,
             """INSERT INTO interviews
                (user_id, interview_id, topic, questions_answered,
                 readiness, report_json)
@@ -233,7 +326,8 @@ def list_interviews(user_id):
 
     connection = connect()
 
-    rows = connection.execute(
+    rows = run(
+        connection,
         """SELECT interview_id, topic, questions_answered, readiness,
                   created_at
            FROM interviews
@@ -257,7 +351,8 @@ def get_interview(user_id, interview_id):
 
     connection = connect()
 
-    row = connection.execute(
+    row = run(
+        connection,
         """SELECT * FROM interviews
            WHERE user_id = ? AND interview_id = ?""",
         (user_id, interview_id)
@@ -291,7 +386,8 @@ def delete_interview(user_id, interview_id):
 
     connection = connect()
 
-    row = connection.execute(
+    row = run(
+        connection,
         "SELECT id FROM interviews WHERE user_id = ? AND interview_id = ?",
         (user_id, interview_id)
     ).fetchone()
@@ -300,7 +396,7 @@ def delete_interview(user_id, interview_id):
         connection.close()
         return False
 
-    connection.execute("DELETE FROM interviews WHERE id = ?", (row["id"],))
+    run(connection, "DELETE FROM interviews WHERE id = ?", (row["id"],))
     connection.commit()
     connection.close()
 
@@ -317,8 +413,8 @@ def delete_account(user_id):
     interviews = list_interviews(user_id)
 
     connection = connect()
-    connection.execute("DELETE FROM interviews WHERE user_id = ?", (user_id,))
-    connection.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    run(connection, "DELETE FROM interviews WHERE user_id = ?", (user_id,))
+    run(connection, "DELETE FROM users WHERE id = ?", (user_id,))
     connection.commit()
     connection.close()
 
@@ -355,13 +451,15 @@ def save_feedback(user_id, interview_id, question_number, was_fair):
 
     connection = connect()
 
-    connection.execute(
+    run(
+        connection,
         """DELETE FROM feedback
            WHERE interview_id = ? AND question_number = ?""",
         (interview_id, question_number)
     )
 
-    connection.execute(
+    run(
+        connection,
         """INSERT INTO feedback
            (user_id, interview_id, question_number, was_fair)
            VALUES (?, ?, ?, ?)""",
@@ -381,7 +479,8 @@ def feedback_summary():
 
     connection = connect()
 
-    row = connection.execute(
+    row = run(
+        connection,
         """SELECT COUNT(*) AS total,
                   SUM(was_fair) AS fair
            FROM feedback"""

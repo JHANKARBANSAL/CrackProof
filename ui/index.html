@@ -486,7 +486,7 @@ tbody tr:hover{background:var(--card-2)}
         </div>
         <div style="display:flex; gap:12px; align-items:center; margin-top:16px; flex-wrap:wrap">
           <div class="okbar" id="okbar" style="flex:1"><svg width="17" height="17" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor" opacity=".2"/><path d="M6 10.5l2.6 2.6L14 7.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg><span id="okbarText">Transcript looks good!</span></div>
-          <button class="btn btn-ghost" style="padding:9px 15px; font-size:.86rem">▶ Listen to Audio</button>
+          <button class="btn btn-ghost" style="padding:9px 15px; font-size:.86rem" id="playBtn">▶ Listen to Audio</button>
         </div>
         <div style="display:flex; justify-content:flex-end; margin-top:18px">
           <button class="btn btn-primary" id="continueBtn">Continue →</button>
@@ -967,6 +967,136 @@ function markStep(number) {
 
 
 /* =========================================================
+   AUDIO BROWSER MEIN SAVE - IndexedDB
+
+   Recording server par nahi jaati. Sirf transcribe hone ke liye
+   bheji jaati hai, aur wahan turant mit jaati hai.
+
+   Asli file yahin browser ke apne storage mein rehti hai. Isse:
+     - kisi ki awaaz server par padi nahi rehti
+     - koi storage ka kharcha nahi
+     - purane interview ka playback phir bhi chalta hai
+
+   Ek baat saaf rakhni chahiye: ye storage isi browser ka hai.
+   Doosre laptop par audio nahi milegi. Transcript aur report
+   milenge, kyunki woh server par hain.
+   ========================================================= */
+
+var audioStore = null;
+
+
+/* Storage kholo. Pehli baar apne aap ban jaata hai. */
+function openStore() {
+  return new Promise(function (done, fail) {
+
+    if (audioStore) {
+      done(audioStore);
+      return;
+    }
+
+    var request = indexedDB.open("crackproof", 1);
+
+    request.onupgradeneeded = function (event) {
+      var db = event.target.result;
+
+      if (!db.objectStoreNames.contains("recordings")) {
+        db.createObjectStore("recordings", { keyPath: "id" });
+      }
+    };
+
+    request.onsuccess = function (event) {
+      audioStore = event.target.result;
+      done(audioStore);
+    };
+
+    request.onerror = function () {
+      fail(request.error);
+    };
+  });
+}
+
+
+/* Har recording ka apna naam */
+function recordingKey(interview, number) {
+  return interview + "_q" + number;
+}
+
+
+/* Recording browser mein rakh do */
+async function saveAudio(interview, number, question, blob) {
+  try {
+    var db = await openStore();
+
+    var box = db.transaction("recordings", "readwrite")
+                .objectStore("recordings");
+
+    box.put({
+      id: recordingKey(interview, number),
+      interview_id: interview,
+      question_number: number,
+      question: question,
+      blob: blob,
+      saved_at: new Date().toISOString()
+    });
+
+  } catch (problem) {
+    /* Storage bhar gaya ya private window hai - koi baat nahi.
+       Interview isse rukna nahi chahiye. */
+    console.log("Could not keep the recording in this browser:", problem);
+  }
+}
+
+
+/* Purani recording nikaalo. Na mile to null. */
+async function loadAudio(interview, number) {
+  try {
+    var db = await openStore();
+
+    return await new Promise(function (done) {
+      var box = db.transaction("recordings", "readonly")
+                  .objectStore("recordings");
+
+      var ask = box.get(recordingKey(interview, number));
+
+      ask.onsuccess = function () {
+        done(ask.result ? ask.result.blob : null);
+      };
+      ask.onerror = function () {
+        done(null);
+      };
+    });
+
+  } catch (problem) {
+    return null;
+  }
+}
+
+
+/* Ek interview ki saari recordings mita do */
+async function deleteAudio(interview) {
+  try {
+    var db = await openStore();
+
+    var box = db.transaction("recordings", "readwrite")
+                .objectStore("recordings");
+
+    var ask = box.getAllKeys();
+
+    ask.onsuccess = function () {
+      for (var i = 0; i < ask.result.length; i++) {
+        if (ask.result[i].indexOf(interview + "_q") === 0) {
+          box.delete(ask.result[i]);
+        }
+      }
+    };
+
+  } catch (problem) {
+    console.log("Could not remove recordings:", problem);
+  }
+}
+
+
+/* =========================================================
    MIC SE RECORDING
    ========================================================= */
 
@@ -1098,6 +1228,10 @@ function stopRecording() {
 /* Recording server ko bhejo aur transcript lo */
 async function sendRecording() {
   var sound = new Blob(pieces, { type: "audio/webm" });
+
+  /* Pehle browser mein rakh do. Server par ye kabhi nahi jaayegi
+     rehne ke liye - sirf transcribe hone ke liye. */
+  saveAudio(interviewId, questionNumber + 1, $("questionText").textContent, sound);
 
   var packet = new FormData();
   packet.append("interview_id", interviewId);
@@ -1551,6 +1685,11 @@ async function setup() {
     }
   };
 
+  /* Apni awaaz sunо */
+  $("playBtn").onclick = function () {
+    playAnswer(interviewId, questionNumber + 1);
+  };
+
   /* Dobara record karo */
   $("rerecBtn").onclick = async function () {
     await ask("/api/retry", { interview_id: interviewId });
@@ -1623,6 +1762,27 @@ async function setup() {
     isGuest = false;
     openApp();
   }
+}
+
+
+/* Apni recording sunо - browser ke storage se */
+var player = null;
+
+async function playAnswer(interview, number) {
+  var blob = await loadAudio(interview, number);
+
+  if (!blob) {
+    $("okbarText").textContent =
+      "That recording is not in this browser. Audio stays on the device it was recorded on.";
+    return;
+  }
+
+  if (player) {
+    player.pause();
+  }
+
+  player = new Audio(URL.createObjectURL(blob));
+  player.play();
 }
 
 

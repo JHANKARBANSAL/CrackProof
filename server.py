@@ -17,6 +17,7 @@ interview_history.json mein save hota rehta hai, to kaam nahi jaata.
 
 import os
 import secrets
+import tempfile
 import traceback
 
 from flask import Flask, jsonify, request, send_from_directory, session
@@ -187,11 +188,33 @@ def answer():
     if upload.filename and "." in upload.filename:
         extension = upload.filename.rsplit(".", 1)[1].lower()
 
-    path = interview.audio_path(extension)
+    # Audio yahan SAVE NAHI hoti.
+    #
+    # Recording browser ke apne storage (IndexedDB) mein rehti hai.
+    # Server ko sirf transcribe karne ke liye chahiye, uske baad nahi.
+    # Isse do faayde hain: kisi ki awaaz server par padi nahi rehti,
+    # aur koi storage bill bhi nahi banta.
+    #
+    # Transcript aur evaluation database mein jaate hain - wahi cheez
+    # har device par chahiye hoti hai.
+    handle, temp_path = tempfile.mkstemp(suffix="." + extension)
+    os.close(handle)
 
-    upload.save(path)
+    try:
+        upload.save(temp_path)
+        result = interview.transcribe(temp_path)
 
-    return jsonify(interview.transcribe(path))
+        # UI ko asli path nahi dena - woh browser ke storage ka
+        # key use karega
+        result["audio_path"] = "browser"
+
+        return jsonify(result)
+
+    finally:
+        try:
+            os.remove(temp_path)
+        except Exception:
+            pass
 
 
 @app.post("/api/retry")
