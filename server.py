@@ -28,15 +28,24 @@ from interview_session import InterviewSession
 
 app = Flask(__name__, static_folder=None)
 
-# Login cookie ko sign karne ke liye. Har baar naya banane se server
-# restart hone par log out ho jaate hain, isliye ek baar bana ke
-# .secret_key file mein rakh lete hain.
-if os.path.exists(".secret_key"):
-    app.secret_key = open(".secret_key").read().strip()
-else:
-    app.secret_key = secrets.token_hex(32)
-    with open(".secret_key", "w") as f:
-        f.write(app.secret_key)
+# Login cookie ko sign karne ki chaabi.
+#
+# Server ke liye ye environment se aati hai. Wahan disk har restart par
+# saaf ho jaata hai, to file mein rakhi chaabi har baar nayi banti - aur
+# nayi chaabi ka matlab hai saare log out ho gaye.
+#
+# Laptop par environment mein kuch nahi hota, isliye ek baar bana ke
+# .secret_key file mein rakh lete hain. Wahan disk bachta hai.
+app.secret_key = os.getenv("SECRET_KEY", "").strip()
+
+if not app.secret_key:
+
+    if os.path.exists(".secret_key"):
+        app.secret_key = open(".secret_key").read().strip()
+    else:
+        app.secret_key = secrets.token_hex(32)
+        with open(".secret_key", "w") as f:
+            f.write(app.secret_key)
 
 database.setup()
 

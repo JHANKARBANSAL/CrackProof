@@ -1,7 +1,7 @@
-# Web app ko sirf itna chahiye.
+# Web app ko sirf itne packages chahiye.
 #
-# whisper, torch, sounddevice aur scipy JAAN-BOOJHKAR nahi hain:
-# unka kaam sirf terminal wale main.py mein hai, aur torch akela
+# whisper, torch, sounddevice aur scipy JAAN-BOOJHKAR nahi hain.
+# Unka kaam sirf terminal wale main.py mein hai, aur akela torch hi
 # ~2 GB ka hai. Server par transcription Groq se hoti hai.
 
 Flask==3.1.3
@@ -11,5 +11,9 @@ google-genai==2.22.0
 pydantic==2.13.5
 numpy==2.5.1
 
-# Flask ka apna server sirf development ke liye hai
+# Supabase (Postgres) se baat karne ke liye.
+# Iske bina deployed app database se connect hi nahi hoga.
+psycopg2-binary==2.9.13
+
+# Flask ka apna server sirf development ke liye hai.
 gunicorn==26.0.0
