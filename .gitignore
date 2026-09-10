@@ -9,6 +9,10 @@ venv/
 knowledge/*
 !knowledge/rubrics
 
+# chunks.json deploy par chahiye - Ollama ke bina bhi BM25 isi se
+# chalta hai. embeddings.json (29 MB) nahi, woh Ollama se banta hai.
+!knowledge/chunks.json
+
 # web backend banne ke baad ye banengi
 .secret_key
 *.db

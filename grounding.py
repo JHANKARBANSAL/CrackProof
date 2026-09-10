@@ -31,9 +31,19 @@ def _get_retriever():
 
     # Pehle embeddings, kyunki test mein woh behtar nikle:
     #   precision 88% vs 70%, useful 92% vs 83% (top 5)
-    # Ollama band ho to BM25 pe chala jao - woh bina kisi model ke
-    # chalta hai, isliye interview kabhi ruke nahi.
-    try:
+    #
+    # Par embeddings ke liye Ollama chahiye, jo server par nahi hota.
+    # Isliye pehle dekh lete hain ki file bani hui hai ya nahi - warna
+    # EmbeddingRetriever poore 1884 chunks embed karne lagta, aur
+    # Ollama ke bina woh dher saari koshishon ke baad hi fail hota.
+    import os
+
+    embeddings_file = os.path.join("knowledge", "embeddings.json")
+
+    if not os.path.exists(embeddings_file):
+        print("  (embeddings nahi hain - BM25 se dhoondh raha hoon)")
+    else:
+      try:
         from retriever_embed import EmbeddingRetriever
 
         retriever = EmbeddingRetriever()
@@ -42,7 +52,7 @@ def _get_retriever():
             _retriever = retriever
             return _retriever
 
-    except Exception as error:
+      except Exception as error:
         print("  (embedding retriever nahi chala:", error, ")")
         print("  (BM25 pe ja raha hoon)")
 

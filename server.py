@@ -437,7 +437,10 @@ def any_error(error):
 
 if __name__ == "__main__":
 
-    print("\n  CrackProof")
-    print("  http://localhost:5000\n")
+    # Host PORT deta hai to wahi use karo, warna 5000
+    port = int(os.environ.get("PORT", 5000))
 
-    app.run(port=5000, debug=False)
+    print("\n  CrackProof")
+    print("  http://localhost:" + str(port) + "\n")
+
+    app.run(host="0.0.0.0", port=port, debug=False)
