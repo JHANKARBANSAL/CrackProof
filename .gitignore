@@ -10,6 +10,7 @@ knowledge/*
 !knowledge/rubrics
 
 # web backend banne ke baad ye banengi
+.secret_key
 *.db
 *.sqlite3
 uploads/

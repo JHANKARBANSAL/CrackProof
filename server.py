@@ -16,14 +16,28 @@ interview_history.json mein save hota rehta hai, to kaam nahi jaata.
 """
 
 import os
+import secrets
 import traceback
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, session
 
+import database
 from interview_session import InterviewSession
 
 
 app = Flask(__name__, static_folder=None)
+
+# Login cookie ko sign karne ke liye. Har baar naya banane se server
+# restart hone par log out ho jaate hain, isliye ek baar bana ke
+# .secret_key file mein rakh lete hain.
+if os.path.exists(".secret_key"):
+    app.secret_key = open(".secret_key").read().strip()
+else:
+    app.secret_key = secrets.token_hex(32)
+    with open(".secret_key", "w") as f:
+        f.write(app.secret_key)
+
+database.setup()
 
 UI_DIR = "ui"
 
@@ -40,6 +54,79 @@ def get_session(interview_id):
 
 def fail(message, code=400):
     return jsonify({"ok": False, "message": message}), code
+
+
+def current_user():
+    """
+    Abhi kaun logged in hai. Koi nahi to None.
+
+    Guest bhi None hi hota hai - guest ka interview save nahi hota.
+    """
+
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        return None
+
+    return database.get_user(user_id)
+
+
+# ========================================================
+# ACCOUNTS
+# ========================================================
+
+@app.post("/api/signup")
+def signup():
+    """Naya account. Body: {"email": "...", "password": "..."}"""
+
+    data = request.get_json(silent=True) or {}
+
+    user_id, error = database.create_user(
+        data.get("email"), data.get("password")
+    )
+
+    if error:
+        return fail(error)
+
+    session["user_id"] = user_id
+
+    return jsonify({
+        "ok": True,
+        "user": database.get_user(user_id),
+    })
+
+
+@app.post("/api/login")
+def login():
+    """Login. Body: {"email": "...", "password": "..."}"""
+
+    data = request.get_json(silent=True) or {}
+
+    user = database.check_login(data.get("email"), data.get("password"))
+
+    if user is None:
+        # Email galat hai ya password - dono par ek hi jawab, taaki
+        # koi ye pata na kar sake ki kaunsa email registered hai.
+        return fail("That email and password do not match.", 401)
+
+    session["user_id"] = user["id"]
+
+    return jsonify({"ok": True, "user": user})
+
+
+@app.post("/api/logout")
+def logout():
+    session.pop("user_id", None)
+    return jsonify({"ok": True})
+
+
+@app.get("/api/me")
+def me():
+    """UI shuru mein poochhta hai: koi logged in hai kya?"""
+
+    user = current_user()
+
+    return jsonify({"ok": True, "user": user})
 
 
 # ========================================================
@@ -66,11 +153,11 @@ def start():
     if not topic:
         return fail("Please choose a topic.")
 
-    session = InterviewSession(topic)
+    interview = InterviewSession(topic)
 
-    sessions[session.interview_id] = session
+    sessions[interview.interview_id] = interview
 
-    return jsonify(session.current_question())
+    return jsonify(interview.current_question())
 
 
 @app.post("/api/answer")
@@ -84,9 +171,9 @@ def answer():
 
     interview_id = request.form.get("interview_id", "")
 
-    session = get_session(interview_id)
+    interview = get_session(interview_id)
 
-    if session is None:
+    if interview is None:
         return fail("That interview is no longer active.", 404)
 
     if "audio" not in request.files:
@@ -100,11 +187,11 @@ def answer():
     if upload.filename and "." in upload.filename:
         extension = upload.filename.rsplit(".", 1)[1].lower()
 
-    path = session.audio_path(extension)
+    path = interview.audio_path(extension)
 
     upload.save(path)
 
-    return jsonify(session.transcribe(path))
+    return jsonify(interview.transcribe(path))
 
 
 @app.post("/api/retry")
@@ -113,14 +200,14 @@ def retry():
 
     data = request.get_json(silent=True) or {}
 
-    session = get_session(data.get("interview_id", ""))
+    interview = get_session(data.get("interview_id", ""))
 
-    if session is None:
+    if interview is None:
         return fail("That interview is no longer active.", 404)
 
-    session.retry()
+    interview.retry()
 
-    return jsonify(session.current_question())
+    return jsonify(interview.current_question())
 
 
 @app.post("/api/evaluate")
@@ -137,9 +224,9 @@ def evaluate():
 
     data = request.get_json(silent=True) or {}
 
-    session = get_session(data.get("interview_id", ""))
+    interview = get_session(data.get("interview_id", ""))
 
-    if session is None:
+    if interview is None:
         return fail("That interview is no longer active.", 404)
 
     transcript = (data.get("transcript") or "").strip()
@@ -147,9 +234,9 @@ def evaluate():
     if not transcript:
         return fail("There is no answer to evaluate.")
 
-    audio_path = data.get("audio_path") or session.audio_path()
+    audio_path = data.get("audio_path") or interview.audio_path()
 
-    return jsonify(session.evaluate(transcript, audio_path))
+    return jsonify(interview.evaluate(transcript, audio_path))
 
 
 @app.post("/api/next")
@@ -158,12 +245,12 @@ def next_question():
 
     data = request.get_json(silent=True) or {}
 
-    session = get_session(data.get("interview_id", ""))
+    interview = get_session(data.get("interview_id", ""))
 
-    if session is None:
+    if interview is None:
         return fail("That interview is no longer active.", 404)
 
-    return jsonify(session.next_question())
+    return jsonify(interview.next_question())
 
 
 @app.post("/api/continue")
@@ -177,17 +264,17 @@ def continue_topic():
 
     data = request.get_json(silent=True) or {}
 
-    session = get_session(data.get("interview_id", ""))
+    interview = get_session(data.get("interview_id", ""))
 
-    if session is None:
+    if interview is None:
         return fail("That interview is no longer active.", 404)
 
     topic = (data.get("topic") or "").strip()
 
-    if topic and topic != session.topic:
-        return jsonify(session.change_topic(topic))
+    if topic and topic != interview.topic:
+        return jsonify(interview.change_topic(topic))
 
-    return jsonify(session.continue_same_topic())
+    return jsonify(interview.continue_same_topic())
 
 
 @app.post("/api/report")
@@ -201,12 +288,25 @@ def report():
 
     data = request.get_json(silent=True) or {}
 
-    session = get_session(data.get("interview_id", ""))
+    interview = get_session(data.get("interview_id", ""))
 
-    if session is None:
+    if interview is None:
         return fail("That interview is no longer active.", 404)
 
-    return jsonify(session.report())
+    result = interview.report()
+
+    # Logged in ho to ye interview account mein save ho jaye.
+    # Guest ka interview save nahi hota - uske liye account chahiye.
+    user = current_user()
+
+    if user and result.get("ok"):
+        database.save_interview(
+            user["id"], interview.interview_id, interview.topic, result
+        )
+
+    result["saved"] = bool(user)
+
+    return jsonify(result)
 
 
 # ========================================================
@@ -216,45 +316,74 @@ def report():
 @app.get("/api/history")
 def history():
     """
-    Purane interviews ki list, disk se padhkar.
+    Is user ke purane interviews.
 
-    Abhi login nahi hai isliye saare interviews dikhte hain. Login
-    aane par ye user ke hisaab se filter hoga.
+    Logged in na ho to khaali list - kisi ka data bina login ke
+    nahi dikhta.
     """
 
-    import json
+    user = current_user()
 
-    folder = "recordings"
+    if user is None:
+        return jsonify({"ok": True, "interviews": [], "signed_in": False})
 
-    rows = []
+    return jsonify({
+        "ok": True,
+        "signed_in": True,
+        "interviews": database.list_interviews(user["id"]),
+    })
 
-    if not os.path.isdir(folder):
-        return jsonify({"ok": True, "interviews": []})
 
-    for name in sorted(os.listdir(folder), reverse=True):
+@app.get("/api/interview/<interview_id>")
+def one_interview(interview_id):
+    """Ek purana interview poora khol ke dekhne ke liye."""
 
-        path = os.path.join(folder, name, "interview_history.json")
+    user = current_user()
 
-        if not os.path.exists(path):
-            continue
+    if user is None:
+        return fail("Please sign in to view your interviews.", 401)
 
-        try:
-            with open(path) as f:
-                turns = json.load(f)
-        except Exception:
-            continue
+    data = database.get_interview(user["id"], interview_id)
 
-        if not turns:
-            continue
+    if data is None:
+        return fail("That interview was not found.", 404)
 
-        rows.append({
-            "interview_id": turns[0].get("interview_id", name),
-            "topic": turns[0].get("topic", ""),
-            "questions_answered": len(turns),
-            "folder": name,
-        })
+    return jsonify({"ok": True, "interview": data})
 
-    return jsonify({"ok": True, "interviews": rows})
+
+@app.post("/api/interview/<interview_id>/delete")
+def remove_interview(interview_id):
+    """
+    Interview mitao - recordings samet.
+
+    Voice recordings personal data hain, isliye list se hatana kaafi
+    nahi, file bhi mitni chahiye.
+    """
+
+    user = current_user()
+
+    if user is None:
+        return fail("Please sign in first.", 401)
+
+    if not database.delete_interview(user["id"], interview_id):
+        return fail("That interview was not found.", 404)
+
+    return jsonify({"ok": True})
+
+
+@app.post("/api/account/delete")
+def remove_account():
+    """Account aur uska saara data mitao."""
+
+    user = current_user()
+
+    if user is None:
+        return fail("Please sign in first.", 401)
+
+    database.delete_account(user["id"])
+    session.pop("user_id", None)
+
+    return jsonify({"ok": True})
 
 
 # ========================================================
