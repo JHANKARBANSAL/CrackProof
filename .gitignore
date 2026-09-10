@@ -17,6 +17,7 @@ uploads/
 
 # training data - dobara generate ho sakta hai, repo mein nahi chahiye
 synthetic_answers.jsonl
+evaluations.jsonl
 training_data.jsonl
 
 # macOS ka kachra
