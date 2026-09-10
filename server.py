@@ -309,6 +309,35 @@ def report():
     return jsonify(result)
 
 
+@app.post("/api/feedback")
+def feedback():
+    """
+    Candidate ki raay: evaluation sahi tha ya nahi.
+
+    Guest bhi de sakta hai - user_id None ho jayega. Raay ka fayda
+    evaluator sudharne mein hai, isliye use rok nahi rahe.
+    """
+
+    data = request.get_json(silent=True) or {}
+
+    interview_id = data.get("interview_id")
+    question_number = data.get("question_number")
+
+    if not interview_id or question_number is None:
+        return fail("Missing interview or question.")
+
+    user = current_user()
+
+    database.save_feedback(
+        user["id"] if user else None,
+        interview_id,
+        question_number,
+        bool(data.get("was_fair")),
+    )
+
+    return jsonify({"ok": True})
+
+
 # ========================================================
 # HISTORY
 # ========================================================

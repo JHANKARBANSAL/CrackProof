@@ -183,6 +183,12 @@ tbody tr:hover{background:var(--card-2)}
 :root[data-theme="dark"] .illus{background:#EAF2EC}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .illus{background:#EAF2EC}}
 
+.choiceRow{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap}
+.choiceRow .btn{flex:1; min-width:150px}
+.feedback{margin-top:18px; padding:16px; border-radius:var(--r); border:1px dashed var(--line-2)}
+.histRow{cursor:pointer}
+.histRow:hover{background:var(--card-2)}
+
 /* report */
 .rep{display:grid; grid-template-columns:210px 1fr; min-height:100vh}
 .side{background:var(--card); border-right:1px solid var(--line); padding:20px 14px; display:flex; flex-direction:column; gap:24px}
@@ -533,6 +539,16 @@ tbody tr:hover{background:var(--card-2)}
       <p style="font-weight:700">Next question</p>
       <p class="small muted" style="margin-top:6px" id="probeHint">Preparing the next question…</p>
       <button class="btn btn-primary" style="margin-top:14px; width:100%; padding:9px; font-size:.86rem" id="nextBtn">Continue →</button>
+
+      <div class="feedback" id="feedback">
+        <p class="small" style="font-weight:600">Was this judgement fair?</p>
+        <p class="small muted" style="margin:4px 0 10px">This helps improve the evaluator.</p>
+        <div style="display:flex; gap:8px">
+          <button class="btn btn-ghost" style="flex:1; padding:7px; font-size:.84rem" id="fairBtn">👍 Fair</button>
+          <button class="btn btn-ghost" style="flex:1; padding:7px; font-size:.84rem" id="unfairBtn">👎 Unfair</button>
+        </div>
+        <p class="small muted" id="feedbackDone" hidden style="margin-top:9px">Thanks — noted.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -556,7 +572,7 @@ tbody tr:hover{background:var(--card-2)}
           <h1 style="font-size:1.6rem">Interview Report</h1>
           <p class="small muted" style="margin-top:4px" id="reportMeta">—</p>
         </div>
-        <button class="btn btn-ghost" style="padding:9px 15px; font-size:.86rem">↗ Share Link</button>
+        <button class="btn btn-ghost" style="padding:9px 15px; font-size:.86rem" id="backHomeBtn">← Home</button>
         <button class="btn btn-primary" style="padding:9px 15px; font-size:.86rem">⤓ Export PDF</button>
       </div>
 
@@ -565,6 +581,16 @@ tbody tr:hover{background:var(--card-2)}
       </div>
 
       <div class="rep-cols" id="reportBody"></div>
+
+      <div class="card" id="batchChoice" hidden style="padding:24px; margin-top:24px">
+        <h3 style="font-size:1.05rem">That's 5 questions. What next?</h3>
+        <p class="small muted" style="margin-top:5px">Your question numbering carries on either way.</p>
+        <div class="choiceRow">
+          <button class="btn btn-primary" id="sameTopicBtn">Continue same topic</button>
+          <button class="btn btn-ghost" id="newTopicBtn">Choose another topic</button>
+          <button class="btn btn-ghost" id="finishBtn">Finish for now</button>
+        </div>
+      </div>
 
       <div style="height:36px"></div>
     </div>
@@ -587,6 +613,8 @@ var user = null;
 var isGuest = false;
 var interviewId = null;
 var audioPath = null;
+var questionNumber = 0;
+var batchDone = false;
 
 
 /* =========================================================
@@ -829,7 +857,7 @@ async function loadHistory() {
     var pill = '<span class="pill ' + readyColour(item.readiness) + '">'
              + safe(readyWord(item.readiness)) + "</span>";
 
-    rows += "<tr>";
+    rows += '<tr class="histRow" data-id="' + safe(item.interview_id) + '">';
     rows += "<td>" + safe(when) + "</td>";
     rows += "<td>" + safe(item.topic) + "</td>";
     rows += "<td>" + item.questions_answered + "</td>";
@@ -839,6 +867,13 @@ async function loadHistory() {
 
   table.innerHTML = rows;
   countTopics(list);
+
+  /* Har row par click - purana report khul jaye */
+  var clickable = table.querySelectorAll(".histRow");
+
+  for (var k = 0; k < clickable.length; k++) {
+    clickable[k].onclick = makeHistoryClick(clickable[k].dataset.id);
+  }
 }
 
 
@@ -875,6 +910,7 @@ function countTopics(list) {
    ========================================================= */
 
 async function startInterview(topic) {
+  batchDone = false;
   go("iv1");
   $("questionText").textContent = "Writing your first question...";
 
@@ -891,6 +927,7 @@ function showQuestion(reply) {
   }
 
   interviewId = reply.interview_id;
+  questionNumber = reply.question_number;
   $("questionText").textContent = reply.question;
 
   /* Upar ka breadcrumb */
@@ -1230,6 +1267,21 @@ function showEvaluation(result) {
     '<p class="small origin" style="margin-bottom:8px">&#10038; Written by AI from the evidence above</p>'
     + '<p style="line-height:1.7">' + safe(result.reasoning) + "</p>";
 
+  /* Feedback ka dabba har naye sawaal par phir se khul jaye */
+  $("feedbackDone").hidden = true;
+  $("fairBtn").disabled = false;
+  $("unfairBtn").disabled = false;
+
+  /* Paanch sawaal poore ho gaye? To ab aage nahi, report dekho. */
+  if (batchDone) {
+    $("nextBtn").textContent = "See your report";
+    $("probeHint").textContent =
+      "That is 5 questions. Your report is ready.";
+  } else {
+    $("nextBtn").textContent = "Continue";
+    $("probeHint").textContent = "The next question will follow up on the gap above.";
+  }
+
   markStep(3);
   go("iv3");
 }
@@ -1295,8 +1347,9 @@ function makeCard(title, items, numbered) {
 }
 
 
-async function showReport() {
+async function showReport(afterBatch) {
   go("report");
+  $("batchChoice").hidden = true;
   $("reportBody").innerHTML = '<p class="muted">Putting your report together...</p>';
 
   var reply = await ask("/api/report", { interview_id: interviewId });
@@ -1307,6 +1360,16 @@ async function showReport() {
     return;
   }
 
+  drawReport(reply);
+
+  /* Batch poora hone par hi aage ka choice dikhao */
+  $("batchChoice").hidden = !afterBatch;
+}
+
+
+/* Report ko screen par likho.
+   Naya report ho ya purana - dono ke liye yahi function chalta hai. */
+function drawReport(reply) {
   var numbers = reply.metrics;
   var written = reply.assessment;
 
@@ -1376,6 +1439,36 @@ async function showReport() {
   $("reportBody").innerHTML =
     '<div style="display:flex; flex-direction:column; gap:22px">' + left + "</div>"
     + '<div style="display:flex; flex-direction:column; gap:22px">' + right + "</div>";
+}
+
+
+/* =========================================================
+   PURANA INTERVIEW KHOLNA
+   ========================================================= */
+
+async function openPastInterview(id) {
+  go("report");
+  $("batchChoice").hidden = true;
+  $("reportBody").innerHTML = '<p class="muted">Opening that interview...</p>';
+
+  var reply = await ask("/api/interview/" + id);
+
+  if (!reply.ok) {
+    $("reportBody").innerHTML =
+      '<div class="notice"><span>&#8505;</span><span>' + safe(reply.message) + "</span></div>";
+    return;
+  }
+
+  var saved = reply.interview.report;
+
+  if (!saved) {
+    $("reportBody").innerHTML =
+      '<div class="notice"><span>&#8505;</span><span>' +
+      "That interview was saved before reports were kept." + "</span></div>";
+    return;
+  }
+
+  drawReport(saved);
 }
 
 
@@ -1451,6 +1544,7 @@ async function setup() {
     this.textContent = "Continue";
 
     if (reply.ok) {
+      batchDone = reply.batch_complete;
       showEvaluation(reply.evaluation);
     } else {
       $("okbarText").textContent = reply.message;
@@ -1465,6 +1559,12 @@ async function setup() {
 
   /* Agla sawaal */
   $("nextBtn").onclick = async function () {
+    /* Batch poora ho gaya to agla sawaal nahi, report */
+    if (batchDone) {
+      showReport(true);
+      return;
+    }
+
     this.disabled = true;
     this.textContent = "Writing the next question...";
 
@@ -1484,6 +1584,37 @@ async function setup() {
     stops[j].onclick = showReport;
   }
 
+  /* Report ke baad ke teen choice */
+  $("sameTopicBtn").onclick = async function () {
+    $("batchChoice").hidden = true;
+    go("iv1");
+    $("questionText").textContent = "Writing your next question...";
+
+    batchDone = false;
+    var reply = await ask("/api/continue", { interview_id: interviewId });
+    showQuestion(reply);
+  };
+
+  $("newTopicBtn").onclick = function () {
+    $("batchChoice").hidden = true;
+    go("topics");
+  };
+
+  $("finishBtn").onclick = function () {
+    $("batchChoice").hidden = true;
+    go("dash");
+    loadHistory();
+  };
+
+  $("backHomeBtn").onclick = function () {
+    go("dash");
+    loadHistory();
+  };
+
+  /* Evaluation sahi tha ya nahi - ye raay jama hoti rehti hai */
+  $("fairBtn").onclick = function () { sendFeedback(true); };
+  $("unfairBtn").onclick = function () { sendFeedback(false); };
+
   /* Pichhli baar ka login yaad hai? To seedha andar. */
   var me = await ask("/api/me");
 
@@ -1492,6 +1623,29 @@ async function setup() {
     isGuest = false;
     openApp();
   }
+}
+
+
+/* Raay bhejo: evaluation sahi tha ya nahi */
+async function sendFeedback(wasFair) {
+  $("fairBtn").disabled = true;
+  $("unfairBtn").disabled = true;
+  $("feedbackDone").hidden = false;
+
+  await ask("/api/feedback", {
+    interview_id: interviewId,
+    question_number: questionNumber,
+    was_fair: wasFair
+  });
+}
+
+
+/* Loop ke andar function banane ke liye - warna sab rows
+   aakhri interview hi kholte */
+function makeHistoryClick(id) {
+  return function () {
+    openPastInterview(id);
+  };
 }
 
 

@@ -71,6 +71,20 @@ def setup():
         )
     """)
 
+    # Har evaluation par candidate ki raay: judgement sahi tha ya nahi.
+    # Ye dheere-dheere labelled data banata hai - agar kabhi apna model
+    # train karna ho, to yahi uska sach hoga.
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS feedback (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id         INTEGER,
+            interview_id    TEXT NOT NULL,
+            question_number INTEGER NOT NULL,
+            was_fair        INTEGER NOT NULL,
+            created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     # Ek user ke interviews jaldi mil jayein
     connection.execute("""
         CREATE INDEX IF NOT EXISTS interviews_by_user
@@ -329,3 +343,53 @@ def remove_recordings(interview_id):
 
     except Exception as error:
         print("  Could not remove recordings:", error)
+
+
+def save_feedback(user_id, interview_id, question_number, was_fair):
+    """
+    Candidate ne bataya ki evaluation sahi tha ya nahi.
+
+    Ek hi sawaal par dobara raay de to purani badal jaati hai,
+    nayi row nahi banti.
+    """
+
+    connection = connect()
+
+    connection.execute(
+        """DELETE FROM feedback
+           WHERE interview_id = ? AND question_number = ?""",
+        (interview_id, question_number)
+    )
+
+    connection.execute(
+        """INSERT INTO feedback
+           (user_id, interview_id, question_number, was_fair)
+           VALUES (?, ?, ?, ?)""",
+        (user_id, interview_id, question_number, 1 if was_fair else 0)
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def feedback_summary():
+    """
+    Ab tak kitni raay mili - fair kitni, unfair kitni.
+
+    Isse pata chalta hai ki evaluator kitna bharosemand hai.
+    """
+
+    connection = connect()
+
+    row = connection.execute(
+        """SELECT COUNT(*) AS total,
+                  SUM(was_fair) AS fair
+           FROM feedback"""
+    ).fetchone()
+
+    connection.close()
+
+    total = row["total"] or 0
+    fair = row["fair"] or 0
+
+    return {"total": total, "fair": fair, "unfair": total - fair}
