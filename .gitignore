@@ -15,5 +15,9 @@ knowledge/*
 *.sqlite3
 uploads/
 
+# training data - dobara generate ho sakta hai, repo mein nahi chahiye
+synthetic_answers.jsonl
+training_data.jsonl
+
 # macOS ka kachra
 .DS_Store
