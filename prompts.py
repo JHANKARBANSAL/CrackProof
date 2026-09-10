@@ -285,15 +285,17 @@ Now that you have been given reference material, fill in the citations
 field. Add one citation for every missing_core_concept and every
 misconception you listed, so the candidate can check the claim.
 
-For each citation:
-- claim   = the exact missing concept or misconception text you used
-- section = the section heading shown above the passage that supports
-            it, copied exactly, for example
-            "Database normalization / Objectives"
+Each passage above starts with a number in square brackets: [1], [2]
+and so on.
 
-Only cite a section that is actually shown above. If nothing above
-supports a claim, leave that claim out of citations rather than
-inventing a source.
+For each citation:
+- claim         = the exact missing concept or misconception text you
+                  used, copied word for word
+- source_number = the number of the passage that supports it
+
+Use only the numbers shown above. If no passage above supports a
+claim, leave that claim out of citations rather than guessing a
+number. Do not write URLs or article names; the number is enough.
 """
 
 

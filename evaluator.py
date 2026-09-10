@@ -28,14 +28,16 @@ class Citation(BaseModel):
     """
     Ek claim aur uska source.
 
-    Isse candidate poochh sake "ye kahan likha hai?" aur jawab mil jaye.
+    Model sirf source ka NUMBER deta hai ([1], [2] jo reference mein
+    likhe the). Asli URL hum apne chunk data se bharte hain, isliye
+    model kabhi jhootha link nahi bana sakta.
     """
 
     # Kaunsi baat - jaise ek missing concept ya misconception
     claim: str
 
-    # Reference ka kaunsa hissa ise support karta hai
-    section: str
+    # Reference mein diye gaye [1], [2]... mein se kaunsa
+    source_number: int
 
 
 # Structure in which we want Gemini's evaluation

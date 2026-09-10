@@ -67,6 +67,30 @@ def _get_retriever():
     return _retriever
 
 
+def make_section_url(page_url, section):
+    """
+    Article ke URL mein section ka anchor jod deta hai.
+
+    https://en.wikipedia.org/wiki/Relational_database
+      + section "Normalization"
+      = https://en.wikipedia.org/wiki/Relational_database#Normalization
+
+    Isse link seedha usi section pe khulta hai, poore article pe nahi.
+    "Introduction" hamara apna naam hai (article ki shuruaat ke liye),
+    Wikipedia pe aisa koi heading nahi hoti, isliye uska anchor nahi.
+    """
+
+    if not page_url:
+        return ""
+
+    if not section or section == "Introduction":
+        return page_url
+
+    anchor = section.strip().replace(" ", "_")
+
+    return page_url + "#" + anchor
+
+
 def get_reference(question, topic, top_k=5):
     """
     Sawaal ke liye reference text aur uske sources laata hai.
@@ -95,21 +119,30 @@ def get_reference(question, topic, top_k=5):
     parts = []
     sources = []
 
+    number = 0
+
     for result in results:
 
-        # Har tukde ke upar likho ki ye kis section se aaya hai,
-        # taaki model ko context pata rahe.
+        number = number + 1
+
+        # Har tukde ko ek number do. Model sirf ye number bolega,
+        # aur URL hum apne data se bharenge - isliye model jhootha
+        # link bana hi nahi sakta.
         parts.append(
-            "From \"" + result["title"] + "\""
+            "[" + str(number) + "] From \"" + result["title"] + "\""
             + ", section \"" + result["section"] + "\":\n"
             + result["text"]
         )
 
         sources.append({
+            "number": number,
             "chunk_id": result["chunk_id"],
             "title": result["title"],
             "section": result["section"],
-            "source": result["source"],
+            "url": make_section_url(
+                result["source"], result["section"]
+            ),
+            "licence": result.get("licence", ""),
             "score": result["score"],
         })
 

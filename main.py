@@ -376,10 +376,12 @@ def main():
                 print("\nReference used:")
                 for source in sources:
                     print(
-                        "-", source["title"],
-                        "/", source["section"],
-                        "(score", str(source["score"]) + ")"
+                        "  [" + str(source["number"]) + "]",
+                        source["title"],
+                        "- section \"" + source["section"] + "\""
                     )
+                    if source["url"]:
+                        print("      ", source["url"])
             else:
                 print("\nReference: none found "
                       "(evaluating without grounding)")
@@ -416,11 +418,16 @@ def main():
             else:
                 print("- None")
 
-            # Kaunsi baat ka kaunsa source hai, dhoondhne ke liye
+            # Number se asli source dhoondhne ke liye
+            source_by_number = {}
+            for source in sources:
+                source_by_number[source["number"]] = source
+
+            # Kaunsi baat ka kaunsa source number hai
             citation_for = {}
             for citation in evaluation.citations:
                 citation_for[citation.claim.strip().lower()] = (
-                    citation.section
+                    citation.source_number
                 )
 
             def print_with_source(item):
@@ -428,10 +435,18 @@ def main():
 
                 print("-", item)
 
-                source = citation_for.get(item.strip().lower())
+                number = citation_for.get(item.strip().lower())
+
+                # URL hamare apne data se aata hai, model se nahi
+                source = source_by_number.get(number)
 
                 if source:
-                    print("    source:", source)
+                    print(
+                        "    source:", source["title"],
+                        "- section \"" + source["section"] + "\""
+                    )
+                    if source["url"]:
+                        print("   ", source["url"])
 
             print("\nMissing Core Concepts:")
             if evaluation.missing_core_concepts:
