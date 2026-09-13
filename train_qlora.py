@@ -107,7 +107,7 @@ def main():
         warmup_ratio=0.03,
         logging_steps=10,
         save_strategy="epoch",
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         fp16=True,
         report_to="none",
     )
