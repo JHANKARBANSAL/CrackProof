@@ -48,9 +48,11 @@ def _get_retriever():
 
         retriever = EmbeddingRetriever()
 
-        if retriever.chunks:
+        if retriever.chunks and len(retriever.vectors) == len(retriever.chunks):
             _retriever = retriever
             return _retriever
+        else:
+            print("  (embeddings chunks se sync nahi hain - BM25 pe ja raha hoon)")
 
       except Exception as error:
         print("  (embedding retriever nahi chala:", error, ")")
