@@ -104,10 +104,8 @@ def main():
         learning_rate=args.lr,
         optim="paged_adamw_8bit",
         lr_scheduler_type="cosine",
-        warmup_ratio=0.03,
         logging_steps=10,
         save_strategy="epoch",
-        eval_strategy="epoch",
         fp16=True,
         report_to="none",
     )
