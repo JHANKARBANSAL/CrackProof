@@ -96,37 +96,103 @@ def main():
     dataset = load_dataset("json", data_files={"train": train_file, "validation": val_file})
 
     print("\n[4/5] Starting SFT training...")
-    training_args = TrainingArguments(
-        output_dir=args.output_dir,
-        num_train_epochs=args.epochs,
-        per_device_train_batch_size=args.batch_size,
-        gradient_accumulation_steps=4,
-        learning_rate=args.lr,
-        optim="paged_adamw_8bit",
-        lr_scheduler_type="cosine",
-        logging_steps=10,
-        save_strategy="epoch",
-        fp16=True,
-        report_to="none",
-    )
+    # Dynamic eval keyword for Hugging Face version compatibility
+    eval_key = "eval_strategy" if hasattr(TrainingArguments, "eval_strategy") else "evaluation_strategy"
 
-    trainer = SFTTrainer(
-        model=model,
-        train_dataset=dataset["train"],
-        eval_dataset=dataset["validation"],
-        peft_config=peft_config,
-        dataset_text_field="messages",
-        max_seq_length=2048,
-        tokenizer=tokenizer,
-        args=training_args,
-    )
+    training_kwargs = {
+        "output_dir": args.output_dir,
+        "num_train_epochs": args.epochs,
+        "per_device_train_batch_size": args.batch_size,
+        "gradient_accumulation_steps": 4,
+        "learning_rate": args.lr,
+        "optim": "paged_adamw_8bit",
+        "lr_scheduler_type": "cosine",
+        "logging_steps": 1,
+        eval_key: "steps",
+        "eval_steps": 1,
+        "save_strategy": "steps",
+        "save_steps": 1,
+        "save_total_limit": 2,
+        "load_best_model_at_end": True,
+        "metric_for_best_model": "eval_loss",
+        "greater_is_better": False,
+        "fp16": True,
+        "report_to": "none",
+    }
+
+    # Format ChatML with add_generation_prompt=False (target assistant message already present)
+    def format_prompts(batch):
+        return {
+            "text": [
+                tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=False)
+                for msgs in batch["messages"]
+            ]
+        }
+
+    train_data = dataset["train"].map(format_prompts, batched=True)
+    val_data = dataset["validation"].map(format_prompts, batched=True)
+
+    try:
+        from trl import SFTConfig
+        training_args = SFTConfig(
+            max_seq_length=2048,
+            dataset_text_field="text",
+            **training_kwargs
+        )
+        trainer = SFTTrainer(
+            model=model,
+            train_dataset=train_data,
+            eval_dataset=val_data,
+            tokenizer=tokenizer,
+            args=training_args,
+        )
+    except (ImportError, TypeError):
+        training_args = TrainingArguments(**training_kwargs)
+        trainer = SFTTrainer(
+            model=model,
+            train_dataset=train_data,
+            eval_dataset=val_data,
+            dataset_text_field="text",
+            max_seq_length=2048,
+            tokenizer=tokenizer,
+            args=training_args,
+        )
 
     trainer.train()
 
-    print(f"\n[5/5] Saving fine-tuned LoRA adapter to {args.output_dir}...")
+    print(f"\n[5/5] Saving best fine-tuned LoRA adapter to {args.output_dir}...")
     trainer.model.save_pretrained(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
     print("Fine-tuning completed successfully!")
+
+    # Generate loss curve if matplotlib is available
+    try:
+        import matplotlib.pyplot as plt
+        train_steps, train_losses = [], []
+        eval_steps, eval_losses = [], []
+        for entry in trainer.state.log_history:
+            if "loss" in entry and "step" in entry:
+                train_steps.append(entry["step"])
+                train_losses.append(entry["loss"])
+            if "eval_loss" in entry and "step" in entry:
+                eval_steps.append(entry["step"])
+                eval_losses.append(entry["eval_loss"])
+
+        if train_losses:
+            plt.figure(figsize=(10, 5), dpi=150)
+            plt.plot(train_steps, train_losses, label="Training Loss", color="#1f77b4", linewidth=2, marker="o")
+            if eval_losses:
+                plt.plot(eval_steps, eval_losses, label="Validation Loss", color="#d62728", linewidth=2, linestyle="--", marker="s")
+            plt.title("CrackProof QLoRA: Training vs Validation Loss Curve")
+            plt.xlabel("Optimizer Steps")
+            plt.ylabel("Loss")
+            plt.grid(True, linestyle=":", alpha=0.6)
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig("crackproof_loss_curve.png", dpi=300)
+            print("[PLOT] Saved loss curve to crackproof_loss_curve.png")
+    except Exception as e:
+        print(f"Plot generation skipped: {e}")
 
 
 if __name__ == "__main__":
