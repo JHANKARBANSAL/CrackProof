@@ -1,5 +1,35 @@
 [
   {
+    "chunk_id": "CN/cn_fresher_interview_essentials.md#address_resolution_protocol_arp#0",
+    "subject": "CN",
+    "title": "Computer Networks Fresher Technical Interview Essentials",
+    "section": "Address Resolution Protocol (ARP)",
+    "source_file": "cn_fresher_interview_essentials.md",
+    "source": "https://datatracker.ietf.org/doc/html/rfc826",
+    "licence": "IETF Open Standards",
+    "text": "Devices communicate at the Network Layer (Layer 3) using logical IP addresses, but data transmission across physical network media at the Data Link Layer (Layer 2) requires physical MAC addresses:\n\n1. Purpose of ARP:\n   - Resolves a known IPv4 address into its corresponding physical MAC address within a local area network (LAN).\n\n2. Resolution Process:\n   - ARP Broadcast Request: When Host A wants to send an IP packet to Host B on the same subnet but lacks B's MAC address, it broadcasts an ARP request frame to the universal broadcast MAC address (FF:FF:FF:FF:FF:FF). All devices on the local segment receive this request.\n   - ARP Unicast Reply: Host B recognizes its own IP address in the packet, updates its local ARP cache with Host A's mapping, and returns a unicast ARP reply containing its physical MAC address directly to Host A.\n\n3. ARP Cache:\n   - Operating systems store resolved IP-to-MAC mappings in an in-memory ARP cache. Subsequent packets reuse cached entries until the Time-To-Live (TTL) expires, minimizing network broadcast congestion."
+  },
+  {
+    "chunk_id": "CN/cn_fresher_interview_essentials.md#lifecycle_of_a_web_request_url_to_webpage#0",
+    "subject": "CN",
+    "title": "Computer Networks Fresher Technical Interview Essentials",
+    "section": "Lifecycle of a Web Request: URL to Webpage",
+    "source_file": "cn_fresher_interview_essentials.md",
+    "source": "https://datatracker.ietf.org/doc/html/rfc826",
+    "licence": "IETF Open Standards",
+    "text": "The standard sequence of networking events triggered when a user types a URL (such as https://www.example.com) into a browser and presses Enter:\n\n1. URL Parsing and Local Cache Check:\n   - Browser parses the protocol (HTTPS), domain name (www.example.com), and port (443).\n   - Checks browser DNS cache, operating system DNS cache, and local hosts file.\n\n2. DNS Resolution:\n   - If not cached locally, the OS queries a recursive DNS resolver (usually provided by the ISP).\n   - The resolver hierarchically queries Root servers, TLD name servers (.com), and finally Authoritative name servers to retrieve the destination IP address.\n\n3. ARP Resolution:\n   - If the destination IP is external, the host resolves the local default gateway (router) MAC address via ARP to forward the packet out of the local network.\n\n4. TCP 3-Way Handshake:\n   - The client initiates a reliable connection with the target server:\n     a. Client sends SYN (Synchronize) packet with an initial sequence number.\n     b. Server replies with SYN-ACK (Synchronize-Acknowledgment).\n     c. Client returns ACK (Acknowledgment). Connection is now established.\n\n5. TLS Handshake (HTTPS Security):\n   - Client and server exchange cipher suite capabilities.\n   - Server provides its digital SSL/TLS certificate, which the client validates against trusted Certificate Authorities (CAs).\n   - Using asymmetric cryptography, client and server securely establish symmetric session keys for encrypting payload data."
+  },
+  {
+    "chunk_id": "CN/cn_fresher_interview_essentials.md#lifecycle_of_a_web_request_url_to_webpage#1",
+    "subject": "CN",
+    "title": "Computer Networks Fresher Technical Interview Essentials",
+    "section": "Lifecycle of a Web Request: URL to Webpage",
+    "source_file": "cn_fresher_interview_essentials.md",
+    "source": "https://datatracker.ietf.org/doc/html/rfc826",
+    "licence": "IETF Open Standards",
+    "text": "which the client validates against trusted Certificate Authorities (CAs).\n   - Using asymmetric cryptography, client and server securely establish symmetric session keys for encrypting payload data. ... 6. HTTP Request and Server Response:\n   - Browser sends an encrypted HTTP GET request with standard headers (Host, User-Agent, Accept).\n   - The web server processes the request, interacts with application servers or databases, and returns an HTTP status code (e.g. 200 OK) alongside the HTML, CSS, or JSON payload.\n\n7. Browser Rendering and Connection Close:\n   - The browser parses the HTML to construct the DOM tree, downloads linked assets, applies CSSOM styling, and executes JavaScript.\n   - The connection terminates gracefully via a TCP 4-way handshake (FIN, ACK, FIN, ACK) or remains open via HTTP keep-alive."
+  },
+  {
     "chunk_id": "CN/computer_network.md#introduction#0",
     "subject": "CN",
     "title": "Computer network",
@@ -8760,6 +8790,26 @@
     "text": "Most assembly languages and some low-level languages, such as BCPL (Basic Combined Programming Language), lack built-in support for data structures. On the other hand, many high-level programming languages and some higher-level assembly languages, such as MASM, have special syntax or other built-in support for certain data structures, such as records and arrays. For example, the C (a direct descendant of BCPL) and Pascal languages support structs and records, respectively, in addition to vectors (one-dimensional arrays) and multi-dimensional arrays.\nMost programming languages feature some sort of library mechanism that allows data structure implementations to be reused by different programs. Modern languages usually come with standard libraries that implement the most common data structures. Examples are the C++ Standard Template Library, the Java Collections Framework, and the Microsoft .NET Framework.\nModern languages also generally support modular programming, the separation between the interface of a library module and its implementation. Some provide opaque data types that allow clients to hide implementation details. Object-oriented programming languages, such as C++, Java, and Smalltalk, typically use classes for this purpose.\nMany known data structures have concurrent versions which allow multiple computing threads to access a single concrete instance of a data structure simultaneously."
   },
   {
+    "chunk_id": "DSA/dsa_fresher_interview_essentials.md#binary_heap_and_priority_queue#0",
+    "subject": "DSA",
+    "title": "DSA Fresher Technical Interview Essentials",
+    "section": "Binary Heap and Priority Queue",
+    "source_file": "dsa_fresher_interview_essentials.md",
+    "source": "https://en.wikipedia.org/wiki/Binary_heap",
+    "licence": "CC BY-SA 4.0 (Wikipedia)",
+    "text": "A Binary Heap is a complete binary tree that satisfies the heap ordering property:\n\n1. Heap Variants:\n   - Min-Heap: The key at the root is the minimum among all keys, and every parent node is less than or equal to its children.\n   - Max-Heap: The key at the root is the maximum among all keys, and every parent node is greater than or equal to its children.\n\n2. Array-Based Representation (Zero-Indexed):\n   - A complete binary tree can be mapped compactly into a linear array without pointer overhead.\n   - For any element at index i:\n     - Left child index: 2i + 1\n     - Right child index: 2i + 2\n     - Parent index: floor((i - 1) / 2)\n\n3. Primary Operations and Complexities:\n   - Peek (Get Min/Max): O(1) by accessing array index 0.\n   - Insertion: Append element to the end of the array and bubble up (heapify-up) by swapping with parents until the heap property is restored. Worst case O(log n).\n   - Extract Min/Max: Replace the root element with the last array element, shrink array size by 1, and bubble down (heapify-down) by swapping with smaller/larger child. Worst case O(log n).\n   - Build Heap: Constructing a heap from an unordered array of n elements takes O(n) time using bottom-up heapify.\n\n4. Practical Applications:\n   - Underlying engine for PriorityQueue in Java and standard libraries.\n   - Dijkstra's shortest path algorithm, Prim's minimum spanning tree, and finding the Top K largest/smallest elements in a stream."
+  },
+  {
+    "chunk_id": "DSA/dsa_fresher_interview_essentials.md#graph_traversals_bfs_versus_dfs#0",
+    "subject": "DSA",
+    "title": "DSA Fresher Technical Interview Essentials",
+    "section": "Graph Traversals: BFS versus DFS",
+    "source_file": "dsa_fresher_interview_essentials.md",
+    "source": "https://en.wikipedia.org/wiki/Binary_heap",
+    "licence": "CC BY-SA 4.0 (Wikipedia)",
+    "text": "Traversing or searching connected vertices in a graph requires systematic tracking to avoid infinite loops caused by cycles:\n\n1. Breadth-First Search (BFS):\n   - Traverses the graph level by level, visiting all immediate neighbors before advancing deeper.\n   - Data Structure: Implemented using an explicit Queue (First-In, First-Out).\n   - Visited Tracking: Maintains a boolean visited array or set to avoid reprocessing nodes.\n   - Time Complexity: O(V + E) where V is the number of vertices and E is the number of edges.\n   - Space Complexity: O(V) to store queue elements and visited flags.\n   - Key Use-Cases: Finding the shortest path in an unweighted graph, peer-to-peer neighbor discovery, cycle detection in undirected graphs.\n\n2. Depth-First Search (DFS):\n   - Explores as deep as possible along each branch before backtracking when hitting a dead end or previously visited node.\n   - Data Structure: Implemented using the system call stack (Recursion) or an explicit Stack (LIFO).\n   - Time Complexity: O(V + E).\n   - Space Complexity: O(V) for the recursion call stack in the worst case (e.g. a linear graph).\n   - Key Use-Cases: Topological sorting in Directed Acyclic Graphs (DAGs), path finding, cycle detection in directed graphs, connected component discovery."
+  },
+  {
     "chunk_id": "DSA/dynamic_programming.md#introduction#0",
     "subject": "DSA",
     "title": "Dynamic programming",
@@ -12710,6 +12760,106 @@
     "text": "Java collections framework is extended by the Apache Commons Collections library, which adds collection types such as a bag and bidirectional map, as well as utilities for creating unions and intersections.\nGoogle has released its own collections libraries as part of the guava libraries."
   },
   {
+    "chunk_id": "JAVA/java_fresher_interview_essentials.md#string_stringbuilder_and_stringbuffer#0",
+    "subject": "JAVA",
+    "title": "Java Fresher Technical Interview Essentials",
+    "section": "String, StringBuilder, and StringBuffer",
+    "source_file": "java_fresher_interview_essentials.md",
+    "source": "https://docs.oracle.com/javase/tutorial/",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "Strings in Java represent sequences of characters, but their mutability and memory management differ fundamentally:\n\n1. String (Immutable):\n   - Once instantiated, a String object's value cannot be altered. Operations like concatenation create a completely new String object on the heap.\n   - String Constant Pool (SCP): Literal strings (e.g. String s = \"abc\") are stored in the String Pool inside the heap. Reusing identical literals saves memory.\n   - Using '+' in loops creates unnecessary intermediate objects, degrading performance and triggering garbage collection overhead.\n\n2. StringBuilder (Mutable, Fast):\n   - Allows modification of character sequences in-place without generating new objects.\n   - Methods like append() and insert() are unsynchronized, making it fast and optimal for single-threaded string manipulation.\n\n3. StringBuffer (Mutable, Thread-Safe):\n   - Mutable like StringBuilder, but its methods are synchronized.\n   - Multiple threads can safely operate on a StringBuffer without data corruption, but synchronization introduces execution overhead."
+  },
+  {
+    "chunk_id": "JAVA/java_fresher_interview_essentials.md#arraylist_versus_linkedlist#0",
+    "subject": "JAVA",
+    "title": "Java Fresher Technical Interview Essentials",
+    "section": "ArrayList versus LinkedList",
+    "source_file": "java_fresher_interview_essentials.md",
+    "source": "https://docs.oracle.com/javase/tutorial/",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "Both classes implement the java.util.List interface, but they use distinct internal data structures:\n\n1. ArrayList (Dynamic Array):\n   - Backed by a resizable array. Default initial capacity is 10; when full, it resizes by approximately 50% (1.5x capacity).\n   - Lookup: O(1) random access by index via direct memory calculation.\n   - Insertion/Deletion: O(n) worst case when adding or removing elements in the middle or beginning because subsequent elements must shift. Amortized O(1) when appending at the end.\n   - Memory: High CPU cache locality because elements sit in contiguous memory.\n\n2. LinkedList (Doubly Linked List):\n   - Backed by bidirectional nodes containing data, a next pointer, and a previous pointer.\n   - Lookup: O(n) sequential traversal starting from head or tail.\n   - Insertion/Deletion: O(1) pointer updates once the node position is located, with no element shifting.\n   - Memory: Higher per-element memory overhead due to two pointer references per node; nodes are scattered across the heap (poor cache locality)."
+  },
+  {
+    "chunk_id": "JAVA/java_fresher_interview_essentials.md#hashmap_core_mechanics_and_collision_resolution#0",
+    "subject": "JAVA",
+    "title": "Java Fresher Technical Interview Essentials",
+    "section": "HashMap Core Mechanics and Collision Resolution",
+    "source_file": "java_fresher_interview_essentials.md",
+    "source": "https://docs.oracle.com/javase/tutorial/",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "HashMap stores key-value associations in an internal array of buckets using hashing:\n\n1. Insertion (put):\n   - Computes key.hashCode() and derives the bucket array index using (capacity - 1) & hash.\n   - If the bucket is empty, a new node is placed there.\n   - If occupied, a hash collision occurs.\n\n2. Collision Handling (Separate Chaining):\n   - Colliding entries are stored in a singly linked list within the same bucket.\n   - When adding an element to a colliding bucket, HashMap traverses the chain checking both hash equality and key.equals(). If an equal key is found, its value is replaced; otherwise, the new node is appended.\n\n3. Retrieval (get):\n   - Finds the bucket index using key.hashCode().\n   - Traverses the bucket chain comparing keys with equals() to return the matching value, yielding average O(1) retrieval.\n\n4. Null Handling and Concurrency:\n   - HashMap permits exactly one null key, which is always assigned to bucket index 0.\n   - HashMap is unsynchronized. Structural modification during iteration triggers a ConcurrentModificationException (fail-fast)."
+  },
+  {
+    "chunk_id": "JAVA/java_fresher_interview_essentials.md#final_finally_and_finalize#0",
+    "subject": "JAVA",
+    "title": "Java Fresher Technical Interview Essentials",
+    "section": "final, finally, and finalize",
+    "source_file": "java_fresher_interview_essentials.md",
+    "source": "https://docs.oracle.com/javase/tutorial/",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "1. final (Keyword / Modifier):\n   - Variable: Becomes constant and cannot be reassigned after initialization.\n   - Method: Cannot be overridden by any subclass.\n   - Class: Cannot be extended/inherited (e.g. java.lang.String is final).\n\n2. finally (Exception Handling Block):\n   - A block paired with try-catch that is guaranteed to execute whether an exception is thrown or caught. Used for releasing resources (closing streams, connections).\n   - Only bypassed if the JVM explicitly exits via System.exit(0) or suffers a fatal crash.\n\n3. finalize (Deprecated Method):\n   - A method in java.lang.Object historically invoked by the garbage collector before reclaiming unreachable memory. Unreliable and deprecated since Java 9."
+  },
+  {
+    "chunk_id": "JAVA/java_fresher_interview_essentials.md#thread_creation_and_synchronization_basics#0",
+    "subject": "JAVA",
+    "title": "Java Fresher Technical Interview Essentials",
+    "section": "Thread Creation and Synchronization Basics",
+    "source_file": "java_fresher_interview_essentials.md",
+    "source": "https://docs.oracle.com/javase/tutorial/",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "1. Thread Creation:\n   - Extending java.lang.Thread: The subclass overrides run(). Java does not support multiple class inheritance, preventing the class from extending any other class.\n   - Implementing java.lang.Runnable: Preferred design pattern. Separates task logic from thread execution and allows extending other base classes.\n\n2. start() versus run():\n   - Calling start() requests the operating system to create a new call stack and begin independent thread execution, which subsequently calls run().\n   - Calling run() directly executes the method synchronously on the existing calling thread without spawning a new thread.\n\n3. synchronized (Keyword):\n   - Enforces mutual exclusion by requiring a thread to acquire an intrinsic monitor lock before entering a critical section (synchronized method or synchronized block).\n   - Prevents race conditions and thread interference on shared mutable state."
+  },
+  {
+    "chunk_id": "JAVA/java_object_equals_and_hashcode_contract.md#introduction#0",
+    "subject": "JAVA",
+    "title": "Object Equality and hashCode Contract (Java SE)",
+    "section": "Introduction",
+    "source_file": "java_object_equals_and_hashcode_contract.md",
+    "source": "https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "In the Java SE platform, class java.lang.Object is the root of the class hierarchy. Every class has Object as a superclass. All objects, including arrays, implement the methods of this class. The equals and hashCode methods defined in java.lang.Object establish the core contract for object comparison and hash-based collections across the Java runtime."
+  },
+  {
+    "chunk_id": "JAVA/java_object_equals_and_hashcode_contract.md#general_contract_of_the_equals_method#0",
+    "subject": "JAVA",
+    "title": "Object Equality and hashCode Contract (Java SE)",
+    "section": "General Contract of the equals Method",
+    "source_file": "java_object_equals_and_hashcode_contract.md",
+    "source": "https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "The equals method implements an equivalence relation on non-null object references.\n\nThe default implementation provided by class Object implements the most discriminating possible equivalence relation on objects; that is, for any non-null reference values x and y, this method returns true if and only if x and y refer to the same object (x == y has the value true).\n\nWhen overriding the equals method, the implementation must satisfy the five properties of an equivalence relation as specified in the Java SE documentation:\n\n1. Reflexive: For any non-null reference value x, x.equals(x) should return true.\n2. Symmetric: For any non-null reference values x and y, x.equals(y) should return true if and only if y.equals(x) returns true.\n3. Transitive: For any non-null reference values x, y, and z, if x.equals(y) returns true and y.equals(z) returns true, then x.equals(z) should return true.\n4. Consistent: For any non-null reference values x and y, multiple invocations of x.equals(y) consistently return true or consistently return false, provided no information used in equals comparisons on the objects is modified.\n5. Non-nullity: For any non-null reference value x, x.equals(null) should return false."
+  },
+  {
+    "chunk_id": "JAVA/java_object_equals_and_hashcode_contract.md#general_contract_of_the_equals_method#1",
+    "subject": "JAVA",
+    "title": "Object Equality and hashCode Contract (Java SE)",
+    "section": "General Contract of the equals Method",
+    "source_file": "java_object_equals_and_hashcode_contract.md",
+    "source": "https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "or consistently return false, provided no information used in equals comparisons on the objects is modified.\n5. Non-nullity: For any non-null reference value x, x.equals(null) should return false. ... Note on null dereferencing: The contract specifies behavior for non-null references. In Java language semantics, attempting to invoke the equals method directly on a reference that evaluates to null (e.g., a.equals(b) where a is null) results in a NullPointerException. The utility method java.util.Objects.equals(Object a, Object b) evaluates equality safely when either or both arguments may be null."
+  },
+  {
+    "chunk_id": "JAVA/java_object_equals_and_hashcode_contract.md#general_contract_of_the_hashcode_method#0",
+    "subject": "JAVA",
+    "title": "Object Equality and hashCode Contract (Java SE)",
+    "section": "General Contract of the hashCode Method",
+    "source_file": "java_object_equals_and_hashcode_contract.md",
+    "source": "https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "The hashCode method returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by java.util.HashMap.\n\nThe general contract of hashCode as specified by the Java SE platform comprises three rules:\n\n1. Consistency within an execution: Whenever it is invoked on the same object more than once during an execution of a Java application, the hashCode method must consistently return the same integer, provided no information used in equals comparisons on the object is modified. This integer need not remain consistent from one execution of an application to another execution of the same application.\n2. Equality implies equal hash codes: If two objects are equal according to the equals method, then calling the hashCode method on each of the two objects must produce the same integer result.\n3. Inequality does not require distinct hash codes: It is not required that if two objects are unequal according to the equals method, then calling the hashCode method on each of the two objects must produce distinct integer results. However, producing distinct integer results for unequal objects may improve the performance of hash tables."
+  },
+  {
+    "chunk_id": "JAVA/java_object_equals_and_hashcode_contract.md#relationship_between_equals_and_hashcode#0",
+    "subject": "JAVA",
+    "title": "Object Equality and hashCode Contract (Java SE)",
+    "section": "Relationship between equals and hashCode",
+    "source_file": "java_object_equals_and_hashcode_contract.md",
+    "source": "https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html",
+    "licence": "Oracle Technology Network Developer License",
+    "text": "As stated in the Java SE API specification note for Object.equals, it is generally necessary to override the hashCode method whenever the equals method is overridden, so as to maintain the general contract for the hashCode method, which states that equal objects must have equal hash codes.\n\nHash-based collections, including java.util.HashMap and java.util.HashSet, rely directly upon this contract to locate and store elements. If equals is overridden without overriding hashCode, logically equal objects may produce different hash codes, violating the requirement that equal objects must have equal hash codes and causing hash table operations to behave inconsistently."
+  },
+  {
     "chunk_id": "JAVA/java_programming_language.md#introduction#0",
     "subject": "JAVA",
     "title": "Java (programming language)",
@@ -14957,7 +15107,7 @@
     "source_file": "encapsulation_computer_programming.md",
     "source": "https://en.wikipedia.org/wiki/Encapsulation_%28computer_programming%29",
     "licence": "CC BY-SA 4.0 (Wikipedia)",
-    "text": "In software systems, encapsulation refers to the bundling of data with the mechanisms or methods that operate on the data.  It may also refer to the limiting of direct access to some of that data, such as an object's components. Essentially, encapsulation prevents external code from being concerned with the internal workings of an object.\nEncapsulation allows developers to present a consistent interface that is independent of its internal implementation. As one example, encapsulation can be used to hide the values or state of a structured data object inside a class. This prevents clients from directly accessing this information in a way that could expose hidden implementation details or violate state invariance maintained by the methods.\nEncapsulation also encourages programmers to put all the code that is concerned with a certain set of data in the same class, which organizes it for easy comprehension by other programmers. Encapsulation is a technique that encourages decoupling.\nAll object-oriented programming (OOP) systems support encapsulation, but encapsulation is not unique to OOP. Implementations of abstract data types, modules, and libraries also offer encapsulation. The similarity has been explained by programming language theorists in terms of existential types."
+    "text": "In software systems, encapsulation refers to the bundling of data with the mechanisms or methods that operate on the data.  It may also refer to the limiting of direct access to some of that data, such as an object's components. Essentially, encapsulation prevents externnhi cahlan ameral code from being concerned with the internal workings of an object.\nEncapsulation allows developers to present a consistent interface that is independent of its internal implementation. As one example, encapsulation can be used to hide the values or state of a structured data object inside a class. This prevents clients from directly accessing this information in a way that could expose hidden implementation details or violate state invariance maintained by the methods.\nEncapsulation also encourages programmers to put all the code that is concerned with a certain set of data in the same class, which organizes it for easy comprehension by other programmers. Encapsulation is a technique that encourages decoupling.\nAll object-oriented programming (OOP) systems support encapsulation, but encapsulation is not unique to OOP. Implementations of abstract data types, modules, and libraries also offer encapsulation. The similarity has been explained by programming language theorists in terms of existential types."
   },
   {
     "chunk_id": "OOP/encapsulation_computer_programming.md#meaning#0",
@@ -15598,6 +15748,26 @@
     "source": "https://en.wikipedia.org/wiki/Object-oriented_programming",
     "licence": "CC BY-SA 4.0 (Wikipedia)",
     "text": "to the compiler. As computers began using more parallel processing and multiple threads, it became more important to understand and control how instructions flow. This is difficult to do with OOP. ... Paul Graham believes big companies like OOP because it helps manage large teams of average programmers. He argues that OOP adds structure, making it harder for one person to make serious mistakes, but at the same time restrains smart programmers. Eric S. Raymond, a Unix programmer and open-source software advocate, argues that OOP is not the best way to write programs.\nRichard Feldman says that, while OOP features helped some languages stay organized, their popularity comes from other reasons. Lawrence Krubner argues that OOP doesn't offer special advantages compared to other styles, like functional programming, and can complicate coding. Luca Cardelli says that OOP is slower and takes longer to compile than procedural programming."
+  },
+  {
+    "chunk_id": "OOP/oop_fresher_interview_essentials.md#method_overloading_versus_method_overriding#0",
+    "subject": "OOP",
+    "title": "OOP Fresher Technical Interview Essentials",
+    "section": "Method Overloading versus Method Overriding",
+    "source_file": "oop_fresher_interview_essentials.md",
+    "source": "https://en.wikipedia.org/wiki/Coupling_(computer_programming)",
+    "licence": "CC BY-SA 4.0 (Wikipedia)",
+    "text": "Polymorphism in object-oriented programming is categorized into compile-time (static) and runtime (dynamic) binding:\n\n1. Method Overloading (Compile-Time / Static Polymorphism):\n   - Occurs within the same class.\n   - Methods share the exact same name but must have different parameter lists (different number, types, or order of parameters).\n   - Return type can be different, but changing the return type alone without altering the parameter list causes a compile error.\n   - The compiler determines which method to call at compile time based on the reference type and argument types.\n\n2. Method Overriding (Runtime / Dynamic Polymorphism):\n   - Occurs between a superclass and a subclass.\n   - The subclass provides a specific implementation of a method already defined in its parent class.\n   - Parameter signature must be identical. Return type must be identical or a subtype (covariant return type).\n   - Visibility cannot be reduced (e.g., a public method in a parent class cannot be made protected or private in a child class).\n   - Private, static, and final methods cannot be overridden.\n   - The JVM determines which method implementation to execute at runtime based on the actual object type on the heap."
+  },
+  {
+    "chunk_id": "OOP/oop_fresher_interview_essentials.md#high_cohesion_and_low_coupling#0",
+    "subject": "OOP",
+    "title": "OOP Fresher Technical Interview Essentials",
+    "section": "High Cohesion and Low Coupling",
+    "source_file": "oop_fresher_interview_essentials.md",
+    "source": "https://en.wikipedia.org/wiki/Coupling_(computer_programming)",
+    "licence": "CC BY-SA 4.0 (Wikipedia)",
+    "text": "High cohesion and low coupling represent the primary architectural goal of clean object-oriented software:\n\n1. Coupling (Inter-module Dependency):\n   - Measures how strongly one class or module relies on other classes.\n   - Tight Coupling: Classes directly instantiate and depend on concrete implementations of other classes. A change in one class forces breaking changes and recompilation across dependent classes.\n   - Loose Coupling: Classes interact through abstract interfaces or dependency injection. Classes can be modified, swapped, or unit-tested in isolation without affecting others.\n\n2. Cohesion (Intra-module Focus):\n   - Measures how closely related and focused the responsibilities within a single class or module are.\n   - Low Cohesion: A class attempts to perform unrelated duties (e.g. database access, business logic, and UI formatting in one file), leading to fragile, unmaintainable code.\n   - High Cohesion: A class has a single, well-defined purpose (aligning with the Single Responsibility Principle), making it simpler to understand, test, and maintain.\n\n3. Desired Balance:\n   - High Cohesion within classes and Low Coupling between classes maximizes code reusability, testability, and software longevity."
   },
   {
     "chunk_id": "OOP/polymorphism_computer_science.md#introduction#0",
@@ -18838,5 +19008,35 @@
     "source": "https://en.wikipedia.org/wiki/Virtual_memory",
     "licence": "CC BY-SA 4.0 (Wikipedia)",
     "text": "Some operating systems provide for swapping entire address spaces, in addition to whatever facilities they have for paging and segmentation. When this occurs, the OS writes those pages and segments currently in real memory to swap files. In a swap-in, the OS reads back the data from the swap files but does not automatically read back pages that had been paged out at the time of the swap out operation.\nIBM's MVS, from OS/VS2 Release 2 through z/OS, provides for marking an address space as unswappable; doing so does not pin any pages in the address space. This can be done for the duration of a job by entering the name of an eligible main program in the Program Properties Table with an unswappable flag. In addition, privileged code can temporarily make an address space unswappable using a SYSEVENT Supervisor Call instruction (SVC); certain changes in the address space properties require that the OS swap it out and then swap it back in, using SYSEVENT TRANSWAP.\nSwapping does not necessarily require memory management hardware, if, for example, multiple jobs are swapped in and out of the same area of storage."
+  },
+  {
+    "chunk_id": "RUBRIC/solo_rubric.md#introduction#0",
+    "subject": "RUBRIC",
+    "title": "Depth Evidence Rubric",
+    "section": "Introduction",
+    "source_file": "solo_rubric.md",
+    "source": "SOLO Taxonomy, Biggs, J. B. & Collis, K. F. (1982),",
+    "licence": "",
+    "text": "## Where this comes from\n\nCrackProof's four depth dimensions are not invented. They line up with\nthe SOLO taxonomy, a published framework for judging the *quality* of\nunderstanding rather than the quantity of facts recalled.\n\n| SOLO level (Biggs & Collis, 1982) | What the response looks like | CrackProof |\n|---|---|---|\n| Prestructural | Misses the point entirely | `NOT_DEMONSTRATED` |\n| Unistructural | Identifies a single isolated fact | `FUNDAMENTAL` |\n| Multistructural | Several facts, not connected together | `PARTIALLY_DEMONSTRATED` |\n| Relational | Connects the facts, explains why and how | `REASONING` |\n| Extended abstract | Generalises beyond the given case | `APPLICATION`, `EDGE_CASE` |\n\n---\n\n## FUNDAMENTAL\n\nTests whether the candidate holds the core facts: definitions,\nmechanisms, essential components. SOLO calls this unistructural, moving\nto multistructural as more facts appear.\n\n**DEMONSTRATED** \u2014 States the concept correctly and completely enough\nfor the question asked. The definition is accurate, not merely a\nkeyword. Verbs at this level: identify, name, define, recall.\n\n**PARTIALLY_DEMONSTRATED** \u2014 Correct on part of the concept but\nincomplete, or correct alongside a misconception about the same\nconcept. Multistructural: pieces are present but not assembled, or one\npiece is wrong.\n\n**NOT_DEMONSTRATED** \u2014 The stated definition is wrong, or the answer\nmisses the point of the question entirely. Prestructural.\n\n---\n\n## REASONING"
+  },
+  {
+    "chunk_id": "RUBRIC/solo_rubric.md#introduction#1",
+    "subject": "RUBRIC",
+    "title": "Depth Evidence Rubric",
+    "section": "Introduction",
+    "source_file": "solo_rubric.md",
+    "source": "SOLO Taxonomy, Biggs, J. B. & Collis, K. F. (1982),",
+    "licence": "",
+    "text": "present but not assembled, or one\npiece is wrong.\n\n**NOT_DEMONSTRATED** \u2014 The stated definition is wrong, or the answer\nmisses the point of the question entirely. Prestructural.\n\n---\n\n## REASONING ... Tests whether the candidate can explain *why* or *how* something works\nrather than restating that it does. SOLO calls this relational: the\nseparate facts are connected into a coherent whole.\n\n**DEMONSTRATED** \u2014 Gives the underlying mechanism or a causal chain\nthat actually explains the behaviour. Verbs: explain, compare, analyse.\nNaming a cause without connecting it to the effect is not enough.\n\n**PARTIALLY_DEMONSTRATED** \u2014 Gestures at a reason but the chain is\nincomplete, circular, or partly wrong. Often reads as several correct\nfacts placed side by side without the link between them.\n\n**NOT_DEMONSTRATED** \u2014 Restates the fact rather than explaining it, or\noffers no reason at all when the question asked for one.\n\n---\n\n## APPLICATION\n\nTests whether the candidate can take the concept to a concrete case:\ncode, a scenario, a debugging situation, a design decision. SOLO calls\nthis extended abstract, since it means using the idea beyond the form\nin which it was learned.\n\n**DEMONSTRATED** \u2014 Applies the concept correctly to a specific case,\nwith the details right. A worked example, correct code behaviour, or a\njustified design choice.\n\n**PARTIALLY_DEMONSTRATED** \u2014 Attempts the application and gets the\nshape right but the details wrong, or gives an example so generic that\nit does not show the concept being used.\n\n**NOT_DEMONSTRATED** \u2014 Cannot move from the definition to a case, or\nthe applied example is incorrect.\n\n---\n\n## EDGE_CASE"
+  },
+  {
+    "chunk_id": "RUBRIC/solo_rubric.md#introduction#2",
+    "subject": "RUBRIC",
+    "title": "Depth Evidence Rubric",
+    "section": "Introduction",
+    "source_file": "solo_rubric.md",
+    "source": "SOLO Taxonomy, Biggs, J. B. & Collis, K. F. (1982),",
+    "licence": "",
+    "text": "or gives an example so generic that\nit does not show the concept being used.\n\n**NOT_DEMONSTRATED** \u2014 Cannot move from the definition to a case, or\nthe applied example is incorrect.\n\n---\n\n## EDGE_CASE ... Tests whether the candidate can reason about limits: boundary\nconditions, failure modes, exceptions, trade-offs. Also extended\nabstract, since it means generalising to situations not given.\n\n**DEMONSTRATED** \u2014 Names a real limitation, failure case, or trade-off\nand explains when it matters.\n\n**PARTIALLY_DEMONSTRATED** \u2014 Knows a limit exists but cannot say when\nit applies or why, or names a trade-off without either side of it.\n\n**NOT_DEMONSTRATED** \u2014 Treats the concept as universally applicable\nwhen the question asked about its limits.\n\n---\n\n## Rules that override everything above\n\n1. **Only judge dimensions the QUESTION actually tests.** Decide which\n   dimensions apply by reading the question, before reading the answer.\n   A dimension the question does not test must not appear at all.\n\n2. **Absence is not failure.** A dimension that does not appear means\n   it was never asked about. It does not mean the candidate failed it.\n\n3. **One judgement per dimension per question.** If the same dimension\n   is both demonstrated and contradicted within one answer, that is a\n   single `PARTIALLY_DEMONSTRATED`, not two separate entries.\n\n4. **A weak or empty answer does not fail every dimension.** It fails\n   only the dimensions the question actually tested.\n\n5. **Judge technical evidence only.** Grammar, accent, fluency,\n   hesitation and Hindi-English code switching are never evidence."
   }
 ]
