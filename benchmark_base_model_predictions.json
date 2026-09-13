@@ -1,0 +1,1436 @@
+{
+  "benchmark_metadata": {
+    "model": "qwen2.5:3b",
+    "test_file": "dataset/test.jsonl",
+    "total_samples": 18,
+    "timestamp": "2026-09-13 18:35:30",
+    "metrics": {
+      "json_parse_rate_percent": 100.0,
+      "schema_adherence_percent": 0.0,
+      "verdict_accuracy_percent": 0.0,
+      "correctness_score_mae": NaN,
+      "depth_score_mae": NaN,
+      "citation_precision_percent": 0.0
+    },
+    "subject_breakdown": {
+      "Java": {
+        "total": 3,
+        "verdict_match": 0,
+        "schema_valid": 0
+      },
+      "OOP": {
+        "total": 3,
+        "verdict_match": 0,
+        "schema_valid": 0
+      },
+      "DBMS": {
+        "total": 3,
+        "verdict_match": 0,
+        "schema_valid": 0
+      },
+      "OS": {
+        "total": 3,
+        "verdict_match": 0,
+        "schema_valid": 0
+      },
+      "CN": {
+        "total": 3,
+        "verdict_match": 0,
+        "schema_valid": 0
+      },
+      "DSA": {
+        "total": 3,
+        "verdict_match": 0,
+        "schema_valid": 0
+      }
+    }
+  },
+  "predictions": [
+    {
+      "sample_index": 0,
+      "question_id": "JAVA_08",
+      "subject": "Java",
+      "latency_seconds": 5.31,
+      "ground_truth": {
+        "verdict": "CORRECT",
+        "correctness_score": 10,
+        "depth_score": 9,
+        "correct_points": [
+          "Default methods allow interface evolution with backward compatibility",
+          "Interfaces cannot have instance state or constructors",
+          "Abstract classes maintain mutable instance fields and constructors",
+          "Multiple inheritance of interfaces vs single inheritance of abstract classes"
+        ],
+        "missing_core_concepts": [],
+        "deeper_concepts_to_probe": [
+          "Diamond conflict resolution rules in interface default methods",
+          "When to choose abstract class vs interface"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Correctly identified instance state and constructor differences."
+          },
+          {
+            "evidence_type": "REASONING",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Highlighted multiple vs single inheritance trade-off."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "An interface cannot hold instance state (no instance fields... while an abstract class can maintain mutable instance state via instance variables and constructors",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Clear, precise explanation of state, constructors, and multiple inheritance."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 8,\n  \"ConceptualDepth\": 7,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 6,\n    \"REASONING\": 8,\n    \"APPLICATION\": 7,\n    \"EDGE_CASE\": 6\n  },\n  \"CoreConceptsCovered\": [\n    \"Interface default methods\",\n    \"Abstract classes\",\n    \"State in interfaces vs. abstract classes\",\n    \"Multiple interface implementations vs. single abstract class inheritance\"\n  ],\n  \"CoreConceptsMissing\": [\n    \"Inheritance in interfaces (interfaces cannot inherit from other interfaces)\",\n    \"Static methods in interfaces (Java 8 introduced default methods, not static methods)\"\n  ],\n  \"TechnicalMisconceptions\": [\n    \"Incorrectly stating that interfaces cannot have instance fields (they can, but they are public static final)\"\n  ],\n  \"Grounding\": [\n    \"[1] Java 8 introduced default methods in interfaces to enable interface evolution with backward compatibility.\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 8,
+        "ConceptualDepth": 7,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 6,
+          "REASONING": 8,
+          "APPLICATION": 7,
+          "EDGE_CASE": 6
+        },
+        "CoreConceptsCovered": [
+          "Interface default methods",
+          "Abstract classes",
+          "State in interfaces vs. abstract classes",
+          "Multiple interface implementations vs. single abstract class inheritance"
+        ],
+        "CoreConceptsMissing": [
+          "Inheritance in interfaces (interfaces cannot inherit from other interfaces)",
+          "Static methods in interfaces (Java 8 introduced default methods, not static methods)"
+        ],
+        "TechnicalMisconceptions": [
+          "Incorrectly stating that interfaces cannot have instance fields (they can, but they are public static final)"
+        ],
+        "Grounding": [
+          "[1] Java 8 introduced default methods in interfaces to enable interface evolution with backward compatibility."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ckward compatibility.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 10,
+      "predicted_depth_score": null,
+      "true_depth_score": 9
+    },
+    {
+      "sample_index": 1,
+      "question_id": "JAVA_08",
+      "subject": "Java",
+      "latency_seconds": 5.23,
+      "ground_truth": {
+        "verdict": "PARTIALLY_CORRECT",
+        "correctness_score": 6,
+        "depth_score": 5,
+        "correct_points": [
+          "Interfaces allow multiple inheritance",
+          "Default methods provide implementation in interfaces"
+        ],
+        "missing_core_concepts": [
+          "Interfaces cannot hold mutable instance state or constructors",
+          "Abstract classes can have stateful fields and constructors"
+        ],
+        "deeper_concepts_to_probe": [
+          "Instance variables in abstract class vs constants in interface"
+        ],
+        "misconceptions": [
+          "Believing interfaces and abstract classes became completely identical"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "PARTIALLY_DEMONSTRATED",
+            "evidence_from_answer": "Captured method implementation and multiple inheritance, but failed on instance state."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "An interface cannot hold instance state (no instance fields... while an abstract class can maintain mutable instance state",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Missed the crucial distinction of instance state and constructors."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 8,\n  \"Conceptual_Depth\": 7,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 6,\n    \"REASONING\": 7,\n    \"APPLICATION\": 6,\n    \"EDGE_CASE\": 5\n  },\n  \"Core_Concepts_Covered\": [\"Java 8\", \"Interface\", \"Abstract Class\", \"Default Methods\", \"Static Methods\", \"Multiple Inheritance\", \"Backward Compatibility\"],\n  \"Core_Concepts_Missing\": [\"Instance State in Abstract Classes\", \"Instance State in Interfaces\"],\n  \"Technical_Misconceptions\": [\"Candidate incorrectly states that interfaces cannot hold instance state, which is not entirely accurate as they can have static final fields. They also incorrectly state that abstract classes can maintain mutable instance state via instance variables and constructors, which is not true as abstract classes cannot have instance variables or constructors. The candidate also does not mention the concept of multiple inheritance in interfaces.\"],\n  \"Grounding\": [\n    \"[1] Java 8 introduced default and static methods in interfaces to enable interface evolution with backward compatibility. Key differences: An interface cannot hold instance state (no instance fields; all variables are public static final), while an abstract class can maintain mutable instance state via instance variables and constructors.\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 8,
+        "Conceptual_Depth": 7,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 6,
+          "REASONING": 7,
+          "APPLICATION": 6,
+          "EDGE_CASE": 5
+        },
+        "Core_Concepts_Covered": [
+          "Java 8",
+          "Interface",
+          "Abstract Class",
+          "Default Methods",
+          "Static Methods",
+          "Multiple Inheritance",
+          "Backward Compatibility"
+        ],
+        "Core_Concepts_Missing": [
+          "Instance State in Abstract Classes",
+          "Instance State in Interfaces"
+        ],
+        "Technical_Misconceptions": [
+          "Candidate incorrectly states that interfaces cannot hold instance state, which is not entirely accurate as they can have static final fields. They also incorrectly state that abstract classes can maintain mutable instance state via instance variables and constructors, which is not true as abstract classes cannot have instance variables or constructors. The candidate also does not mention the concept of multiple inheritance in interfaces."
+        ],
+        "Grounding": [
+          "[1] Java 8 introduced default and static methods in interfaces to enable interface evolution with backward compatibility. Key differences: An interface cannot hold instance state (no instance fields; all variables are public static final), while an abstract class can maintain mutable instance state via instance variables and constructors."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "PARTIALLY_CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 6,
+      "predicted_depth_score": null,
+      "true_depth_score": 5
+    },
+    {
+      "sample_index": 2,
+      "question_id": "JAVA_08",
+      "subject": "Java",
+      "latency_seconds": 4.73,
+      "ground_truth": {
+        "verdict": "INCORRECT",
+        "correctness_score": 1,
+        "depth_score": 1,
+        "correct_points": [],
+        "missing_core_concepts": [
+          "Default methods are public by default and designed to be inherited and called by implementing classes"
+        ],
+        "deeper_concepts_to_probe": [
+          "Interface method access modifiers in Java 8 and 9"
+        ],
+        "misconceptions": [
+          "Believing default methods are private and inaccessible"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "NOT_DEMONSTRATED",
+            "evidence_from_answer": "Inverted the access visibility of default methods."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "default methods to interfaces which allows developers to add new methods to existing interfaces without breaking compatibility",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Completely incorrect definition of default method accessibility."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 7,\n  \"ConceptualDepth\": 6,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 5,\n    \"REASONING\": 6,\n    \"APPLICATION\": 5,\n    \"EDGE_CASE\": 4\n  },\n  \"CoreConceptsCovered\": [\n    \"Default methods in Java 8\",\n    \"Static methods in Java 8\",\n    \"Interfaces in Java\",\n    \"Abstract classes in Java\",\n    \"Interface evolution with backward compatibility in Java 8\"\n  ],\n  \"CoreConceptsMissing\": [\n    \"Instance state in abstract classes\",\n    \"Multiple inheritance in interfaces\"\n  ],\n  \"TechnicalMisconceptions\": [\n    \"Incorrectly stating that default methods can only be called inside the interface itself (they can be called from other methods in the same interface implementation).\"\n  ],\n  \"Grounding\": [\n    \"[1] Java 8 introduced default and static methods in interfaces to enable interface evolution with backward compatibility. Key differences: An interface cannot hold instance state (no instance fields; all variables are public static final), while an abstract class can maintain mutable instance state via instance variables and constructors.\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 7,
+        "ConceptualDepth": 6,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 5,
+          "REASONING": 6,
+          "APPLICATION": 5,
+          "EDGE_CASE": 4
+        },
+        "CoreConceptsCovered": [
+          "Default methods in Java 8",
+          "Static methods in Java 8",
+          "Interfaces in Java",
+          "Abstract classes in Java",
+          "Interface evolution with backward compatibility in Java 8"
+        ],
+        "CoreConceptsMissing": [
+          "Instance state in abstract classes",
+          "Multiple inheritance in interfaces"
+        ],
+        "TechnicalMisconceptions": [
+          "Incorrectly stating that default methods can only be called inside the interface itself (they can be called from other methods in the same interface implementation)."
+        ],
+        "Grounding": [
+          "[1] Java 8 introduced default and static methods in interfaces to enable interface evolution with backward compatibility. Key differences: An interface cannot hold instance state (no instance fields; all variables are public static final), while an abstract class can maintain mutable instance state via instance variables and constructors."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...les and constructors.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "INCORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 1,
+      "predicted_depth_score": null,
+      "true_depth_score": 1
+    },
+    {
+      "sample_index": 3,
+      "question_id": "OOP_08",
+      "subject": "OOP",
+      "latency_seconds": 5.06,
+      "ground_truth": {
+        "verdict": "CORRECT",
+        "correctness_score": 10,
+        "depth_score": 9,
+        "correct_points": [
+          "Subclasses must be substitutable for superclasses without breaking correctness",
+          "Preserves behavioral subtyping and contracts",
+          "Accurately illustrated with the classic Square-Rectangle violation"
+        ],
+        "missing_core_concepts": [],
+        "deeper_concepts_to_probe": [
+          "Preconditions cannot be strengthened and postconditions cannot be weakened",
+          "Design by Contract"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Accurately stated the substitutability definition."
+          },
+          {
+            "evidence_type": "APPLICATION",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Provided the classic Square-Rectangle violation showing how contract assumptions fail."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "objects of a superclass should be replaceable with objects of its subclasses without altering the correctness... Square-Rectangle problem",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Clear, precise understanding of behavioral subtyping with an exemplary classic scenario."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 10,\n  \"Conceptual_Depth\": 9,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 8,\n    \"REASONING\": 9,\n    \"APPLICATION\": 7,\n    \"EDGE_CASE\": 6\n  },\n  \"Concepts_Correctly_Covered\": [\n    \"Liskov Substitution Principle (LSP)\",\n    \"Behavioral Subtyping\",\n    \"Square-Rectangle problem\"\n  ],\n  \"Missing_Core_Concepts\": [\n    \"No core concepts missing\"\n  ],\n  \"Technical_Misconceptions\": [\n    \"The candidate correctly identified the Square-Rectangle problem as a violation of LSP, but they could have provided more context or a broader example.\"\n  ],\n  \"Grounding\": [\n    \"[1] The Liskov Substitution Principle (LSP) states that objects of a superclass should be replaceable with objects of its subclasses without altering the correctness or desirable properties of the program. A classic violation is the Square-Rectangle problem: a Square inherits from Rectangle, but overriding setWidth() to modify height violates the caller's expectation that changing width leaves height unchanged, breaking behavioral subtyping.\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 10,
+        "Conceptual_Depth": 9,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 8,
+          "REASONING": 9,
+          "APPLICATION": 7,
+          "EDGE_CASE": 6
+        },
+        "Concepts_Correctly_Covered": [
+          "Liskov Substitution Principle (LSP)",
+          "Behavioral Subtyping",
+          "Square-Rectangle problem"
+        ],
+        "Missing_Core_Concepts": [
+          "No core concepts missing"
+        ],
+        "Technical_Misconceptions": [
+          "The candidate correctly identified the Square-Rectangle problem as a violation of LSP, but they could have provided more context or a broader example."
+        ],
+        "Grounding": [
+          "[1] The Liskov Substitution Principle (LSP) states that objects of a superclass should be replaceable with objects of its subclasses without altering the correctness or desirable properties of the program. A classic violation is the Square-Rectangle problem: a Square inherits from Rectangle, but overriding setWidth() to modify height violates the caller's expectation that changing width leaves height unchanged, breaking behavioral subtyping."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 10,
+      "predicted_depth_score": null,
+      "true_depth_score": 9
+    },
+    {
+      "sample_index": 4,
+      "question_id": "OOP_08",
+      "subject": "OOP",
+      "latency_seconds": 4.04,
+      "ground_truth": {
+        "verdict": "PARTIALLY_CORRECT",
+        "correctness_score": 5,
+        "depth_score": 4,
+        "correct_points": [
+          "Recognizes that child classes inherit parent methods"
+        ],
+        "missing_core_concepts": [
+          "LSP is about behavioral contract preservation, not just syntax compilation",
+          "Subclass must satisfy caller invariants without throwing unexpected exceptions"
+        ],
+        "deeper_concepts_to_probe": [
+          "Behavioral subtyping vs syntactic inheritance"
+        ],
+        "misconceptions": [
+          "Believing LSP is just about compiler method inheritance rather than behavioral semantics"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "PARTIALLY_DEMONSTRATED",
+            "evidence_from_answer": "Confused syntactic method presence with semantic behavioral substitutability."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "objects of a superclass should be replaceable with objects of its subclasses without altering the correctness or desirable properties",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Confused compile-time signature inheritance with behavioral subtyping contracts."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 8,\n  \"ConceptualDepth\": 7,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 6,\n    \"REASONING\": 8,\n    \"APPLICATION\": 7,\n    \"EDGE_CASE\": 5\n  },\n  \"CoreConceptsCovered\": [\"Liskov Substitution Principle\", \"Violation Example\"],\n  \"CoreConceptsMissing\": [\"Behavioral Subtyping\", \"Polymorphism\"],\n  \"TechnicalMisconceptions\": [\"LSP only applies to compile-time substitution, not runtime\"],\n  \"Grounding\": [\n    \"[1] The Liskov Substitution Principle (LSP) states that objects of a superclass should be replaceable with objects of its subclasses without altering the correctness or desirable properties of the program. A classic violation is the Square-Rectangle problem: a Square inherits from Rectangle, but overriding setWidth() to modify height violates the caller's expectation that changing width leaves height unchanged, breaking behavioral subtyping.\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 8,
+        "ConceptualDepth": 7,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 6,
+          "REASONING": 8,
+          "APPLICATION": 7,
+          "EDGE_CASE": 5
+        },
+        "CoreConceptsCovered": [
+          "Liskov Substitution Principle",
+          "Violation Example"
+        ],
+        "CoreConceptsMissing": [
+          "Behavioral Subtyping",
+          "Polymorphism"
+        ],
+        "TechnicalMisconceptions": [
+          "LSP only applies to compile-time substitution, not runtime"
+        ],
+        "Grounding": [
+          "[1] The Liskov Substitution Principle (LSP) states that objects of a superclass should be replaceable with objects of its subclasses without altering the correctness or desirable properties of the program. A classic violation is the Square-Rectangle problem: a Square inherits from Rectangle, but overriding setWidth() to modify height violates the caller's expectation that changing width leaves height unchanged, breaking behavioral subtyping."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "PARTIALLY_CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 5,
+      "predicted_depth_score": null,
+      "true_depth_score": 4
+    },
+    {
+      "sample_index": 5,
+      "question_id": "OOP_08",
+      "subject": "OOP",
+      "latency_seconds": 4.1,
+      "ground_truth": {
+        "verdict": "INCORRECT",
+        "correctness_score": 1,
+        "depth_score": 1,
+        "correct_points": [],
+        "missing_core_concepts": [
+          "LSP governs substitutability of derived classes for base classes"
+        ],
+        "deeper_concepts_to_probe": [
+          "SOLID principles"
+        ],
+        "misconceptions": [
+          "Believing LSP is about singleton private constructors"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "NOT_DEMONSTRATED",
+            "evidence_from_answer": "Completely detached from SOLID principles."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "The Liskov Substitution Principle (LSP) states that objects of a superclass should be replaceable",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Purely nonsensical claim unrelated to LSP."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 2,\n  \"ConceptualDepth\": 3,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 2,\n    \"REASONING\": 3,\n    \"APPLICATION\": 2,\n    \"EDGE_CASE\": 2\n  },\n  \"CoreConceptsCovered\": [\"Liskov Substitution Principle\", \"Violation Example\"],\n  \"CoreConceptsMissing\": [\"Main Method\", \"Private Constructor\", \"Behavioral Subtyping\"],\n  \"TechnicalMisconceptions\": [\"Classes must have a main method and private constructor\"],\n  \"Grounding\": [\n    \"[1] The Liskov Substitution Principle (LSP) states that objects of a superclass should be replaceable with objects of its subclasses without altering the correctness or desirable properties of the program. A classic violation is the Square-Rectangle problem: a Square inherits from Rectangle, but overriding setWidth() to modify height violates the caller's expectation that changing width leaves height unchanged, breaking behavioral subtyping.\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 2,
+        "ConceptualDepth": 3,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 2,
+          "REASONING": 3,
+          "APPLICATION": 2,
+          "EDGE_CASE": 2
+        },
+        "CoreConceptsCovered": [
+          "Liskov Substitution Principle",
+          "Violation Example"
+        ],
+        "CoreConceptsMissing": [
+          "Main Method",
+          "Private Constructor",
+          "Behavioral Subtyping"
+        ],
+        "TechnicalMisconceptions": [
+          "Classes must have a main method and private constructor"
+        ],
+        "Grounding": [
+          "[1] The Liskov Substitution Principle (LSP) states that objects of a superclass should be replaceable with objects of its subclasses without altering the correctness or desirable properties of the program. A classic violation is the Square-Rectangle problem: a Square inherits from Rectangle, but overriding setWidth() to modify height violates the caller's expectation that changing width leaves height unchanged, breaking behavioral subtyping."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...behavioral subtyping.\"]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "INCORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 1,
+      "predicted_depth_score": null,
+      "true_depth_score": 1
+    },
+    {
+      "sample_index": 6,
+      "question_id": "DBMS_08",
+      "subject": "DBMS",
+      "latency_seconds": 4.15,
+      "ground_truth": {
+        "verdict": "CORRECT",
+        "correctness_score": 10,
+        "depth_score": 9,
+        "correct_points": [
+          "WHERE filters rows before grouping/aggregation",
+          "WHERE cannot contain aggregate functions",
+          "HAVING filters groups after GROUP BY execution",
+          "HAVING can evaluate aggregate conditions",
+          "Clearly stated the execution order difference"
+        ],
+        "missing_core_concepts": [],
+        "deeper_concepts_to_probe": [
+          "Performance impact: filtering early with WHERE reduces rows processed by GROUP BY",
+          "SQL query logical execution phase order"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Accurately contrasted row-level vs group-level filtering."
+          },
+          {
+            "evidence_type": "REASONING",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Specified execution order and aggregate function restrictions."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "WHERE clause filters individual rows before any grouping... HAVING clause filters grouped summary rows after the GROUP BY clause",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Clear, precise distinction detailing scope, aggregate function usage, and query execution order."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 10,\n  \"Conceptual_Depth\": 9,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 8,\n    \"REASONING\": 9,\n    \"APPLICATION\": 7,\n    \"EDGE_CASE\": 8\n  },\n  \"Core_Concepts_Covered\": [\"WHERE clause\", \"HAVING clause\", \"SQL execution order\", \"aggregate functions\", \"GROUP BY clause\"],\n  \"Core_Concepts_Missing\": [\"subqueries\", \"joins\"],\n  \"Technical_Misconceptions\": [\"The HAVING clause can contain aggregate functions like COUNT() or AVG().\"],\n  \"Grounding\": [\n    \"[1] In SQL execution order: The WHERE clause filters individual rows before any grouping or aggregation takes place (cannot contain aggregate functions like SUM, AVG, COUNT). The HAVING clause filters grouped summary rows after the GROUP BY clause has executed and aggregates have been calculated (specifically designed to filter aggregate conditions).\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 10,
+        "Conceptual_Depth": 9,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 8,
+          "REASONING": 9,
+          "APPLICATION": 7,
+          "EDGE_CASE": 8
+        },
+        "Core_Concepts_Covered": [
+          "WHERE clause",
+          "HAVING clause",
+          "SQL execution order",
+          "aggregate functions",
+          "GROUP BY clause"
+        ],
+        "Core_Concepts_Missing": [
+          "subqueries",
+          "joins"
+        ],
+        "Technical_Misconceptions": [
+          "The HAVING clause can contain aggregate functions like COUNT() or AVG()."
+        ],
+        "Grounding": [
+          "[1] In SQL execution order: The WHERE clause filters individual rows before any grouping or aggregation takes place (cannot contain aggregate functions like SUM, AVG, COUNT). The HAVING clause filters grouped summary rows after the GROUP BY clause has executed and aggregates have been calculated (specifically designed to filter aggregate conditions)."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 10,
+      "predicted_depth_score": null,
+      "true_depth_score": 9
+    },
+    {
+      "sample_index": 7,
+      "question_id": "DBMS_08",
+      "subject": "DBMS",
+      "latency_seconds": 4.11,
+      "ground_truth": {
+        "verdict": "PARTIALLY_CORRECT",
+        "correctness_score": 6,
+        "depth_score": 5,
+        "correct_points": [
+          "WHERE is for normal row filtering",
+          "HAVING is used with GROUP BY to filter groups"
+        ],
+        "missing_core_concepts": [
+          "WHERE runs before grouping; HAVING runs after aggregation",
+          "Aggregate functions (SUM, COUNT) are forbidden in WHERE and evaluated in HAVING"
+        ],
+        "deeper_concepts_to_probe": [
+          "Execution order in SQL"
+        ],
+        "misconceptions": [
+          "Strict claim that HAVING can never be used without GROUP BY (HAVING can technically filter an entire table as a single aggregate group in ANSI SQL)"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "PARTIALLY_DEMONSTRATED",
+            "evidence_from_answer": "Understood the general context of GROUP BY but did not mention aggregate function restrictions or execution phases."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "WHERE clause filters individual rows before any grouping... cannot contain aggregate functions",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Correct basic distinction regarding GROUP BY, but missed the underlying execution order and aggregate restrictions."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 8,\n  \"Conceptual_Depth\": 7,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 6,\n    \"REASONING\": 7,\n    \"APPLICATION\": 6,\n    \"EDGE_CASE\": 5\n  },\n  \"Core_Concepts_Covered\": [\"WHERE clause\", \"HAVING clause\", \"GROUP BY\", \"Aggregation functions\"],\n  \"Core_Concepts_Missing\": [\"SQL execution order\"],\n  \"Technical_Misconceptions\": [\"Candidate incorrectly states that HAVING clause cannot be used without GROUP BY, which is not entirely accurate as it can be used with aggregate functions without GROUP BY in some contexts.\"],\n  \"Grounding\": [\n    \"[1] In SQL execution order: The WHERE clause filters individual rows before any grouping or aggregation takes place (cannot contain aggregate functions like SUM, AVG, COUNT). The HAVING clause filters grouped summary rows after the GROUP BY clause has executed and aggregates have been calculated (specifically designed to filter aggregate conditions).\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 8,
+        "Conceptual_Depth": 7,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 6,
+          "REASONING": 7,
+          "APPLICATION": 6,
+          "EDGE_CASE": 5
+        },
+        "Core_Concepts_Covered": [
+          "WHERE clause",
+          "HAVING clause",
+          "GROUP BY",
+          "Aggregation functions"
+        ],
+        "Core_Concepts_Missing": [
+          "SQL execution order"
+        ],
+        "Technical_Misconceptions": [
+          "Candidate incorrectly states that HAVING clause cannot be used without GROUP BY, which is not entirely accurate as it can be used with aggregate functions without GROUP BY in some contexts."
+        ],
+        "Grounding": [
+          "[1] In SQL execution order: The WHERE clause filters individual rows before any grouping or aggregation takes place (cannot contain aggregate functions like SUM, AVG, COUNT). The HAVING clause filters grouped summary rows after the GROUP BY clause has executed and aggregates have been calculated (specifically designed to filter aggregate conditions)."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "PARTIALLY_CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 6,
+      "predicted_depth_score": null,
+      "true_depth_score": 5
+    },
+    {
+      "sample_index": 8,
+      "question_id": "DBMS_08",
+      "subject": "DBMS",
+      "latency_seconds": 3.7,
+      "ground_truth": {
+        "verdict": "INCORRECT",
+        "correctness_score": 1,
+        "depth_score": 1,
+        "correct_points": [],
+        "missing_core_concepts": [
+          "WHERE filters rows before aggregation; HAVING filters groups after aggregation; swapping them causes syntax and logical errors"
+        ],
+        "deeper_concepts_to_probe": [
+          "SQL syntax and clauses"
+        ],
+        "misconceptions": [
+          "Believing WHERE and HAVING are interchangeable synonyms"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "NOT_DEMONSTRATED",
+            "evidence_from_answer": "Claimed two distinct filtering clauses are completely interchangeable."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "WHERE clause filters individual rows before any grouping... The HAVING clause filters grouped summary rows after the GROUP BY",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Blatantly incorrect claim of equivalence."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 5,\n  \"ConceptualDepth\": 6,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 4,\n    \"REASONING\": 6,\n    \"APPLICATION\": 5,\n    \"EDGE_CASE\": 5\n  },\n  \"CoreConceptsCovered\": [\"WHERE clause\", \"HAVING clause\", \"SQL execution order\", \"GROUP BY clause\", \"aggregate functions\"],\n  \"CoreConceptsMissing\": [\"SQL execution order details\"],\n  \"TechnicalMisconceptions\": [\"WHERE and HAVING are synonyms\"],\n  \"Grounding\": [\n    \"[1] In SQL execution order: The WHERE clause filters individual rows before any grouping or aggregation takes place (cannot contain aggregate functions like SUM, AVG, COUNT). The HAVING clause filters grouped summary rows after the GROUP BY clause has executed and aggregates have been calculated (specifically designed to filter aggregate conditions).\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 5,
+        "ConceptualDepth": 6,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 4,
+          "REASONING": 6,
+          "APPLICATION": 5,
+          "EDGE_CASE": 5
+        },
+        "CoreConceptsCovered": [
+          "WHERE clause",
+          "HAVING clause",
+          "SQL execution order",
+          "GROUP BY clause",
+          "aggregate functions"
+        ],
+        "CoreConceptsMissing": [
+          "SQL execution order details"
+        ],
+        "TechnicalMisconceptions": [
+          "WHERE and HAVING are synonyms"
+        ],
+        "Grounding": [
+          "[1] In SQL execution order: The WHERE clause filters individual rows before any grouping or aggregation takes place (cannot contain aggregate functions like SUM, AVG, COUNT). The HAVING clause filters grouped summary rows after the GROUP BY clause has executed and aggregates have been calculated (specifically designed to filter aggregate conditions)."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ggregate conditions).']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "INCORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 1,
+      "predicted_depth_score": null,
+      "true_depth_score": 1
+    },
+    {
+      "sample_index": 9,
+      "question_id": "OS_08",
+      "subject": "OS",
+      "latency_seconds": 4.64,
+      "ground_truth": {
+        "verdict": "CORRECT",
+        "correctness_score": 10,
+        "depth_score": 9,
+        "correct_points": [
+          "Critical section is code accessing shared mutable resources",
+          "Race condition occurs when output depends on arbitrary thread scheduling timing",
+          "Three requirements for valid solution: Mutual Exclusion, Progress, and Bounded Waiting"
+        ],
+        "missing_core_concepts": [],
+        "deeper_concepts_to_probe": [
+          "Peterson's Algorithm",
+          "Hardware atomic instructions like Test-and-Set and Compare-And-Swap (CAS)"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Accurately defined critical section and race conditions."
+          },
+          {
+            "evidence_type": "REASONING",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Listed the three formal criteria for critical section solutions."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "Critical Section is a segment of code where multiple concurrent threads/processes access shared resources... Race Condition occurs when the outcome... depends unpredictably on... timing... Mutual Exclusion, Progress, and Bounded Waiting",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Clear, comprehensive explanation of critical section, race condition, and the three formal solution requirements."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 9,\n  \"ConceptualDepth\": 8,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 7,\n    \"REASONING\": 8,\n    \"APPLICATION\": 6,\n    \"EDGE_CASE\": 7\n  },\n  \"CoreConceptsCovered\": [\n    \"Critical Section\",\n    \"Race Condition\",\n    \"Mutual Exclusion\",\n    \"Progress\",\n    \"Bounded Waiting\"\n  ],\n  \"CoreConceptsMissing\": [\n    \"Semaphores\",\n    \"Monitors\",\n    \"Pthreads\"\n  ],\n  \"TechnicalMisconceptions\": [\n    \"The candidate correctly identified that semaphores and monitors are synchronization mechanisms, but did not mention them as solutions to the critical section problem.\"\n  ],\n  \"Grounding\": [\n    \"[1] The Critical Section is a segment of code where multiple concurrent threads/processes access shared resources (such as global memory or files). A Race Condition occurs when the outcome of concurrent execution depends unpredictably on the non-deterministic interleaving or timing of thread execution. A valid solution to the critical section problem must satisfy three requirements: Mutual Exclusion, Progress, and Bounded Waiting.\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 9,
+        "ConceptualDepth": 8,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 7,
+          "REASONING": 8,
+          "APPLICATION": 6,
+          "EDGE_CASE": 7
+        },
+        "CoreConceptsCovered": [
+          "Critical Section",
+          "Race Condition",
+          "Mutual Exclusion",
+          "Progress",
+          "Bounded Waiting"
+        ],
+        "CoreConceptsMissing": [
+          "Semaphores",
+          "Monitors",
+          "Pthreads"
+        ],
+        "TechnicalMisconceptions": [
+          "The candidate correctly identified that semaphores and monitors are synchronization mechanisms, but did not mention them as solutions to the critical section problem."
+        ],
+        "Grounding": [
+          "[1] The Critical Section is a segment of code where multiple concurrent threads/processes access shared resources (such as global memory or files). A Race Condition occurs when the outcome of concurrent execution depends unpredictably on the non-deterministic interleaving or timing of thread execution. A valid solution to the critical section problem must satisfy three requirements: Mutual Exclusion, Progress, and Bounded Waiting."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 10,
+      "predicted_depth_score": null,
+      "true_depth_score": 9
+    },
+    {
+      "sample_index": 10,
+      "question_id": "OS_08",
+      "subject": "OS",
+      "latency_seconds": 4.35,
+      "ground_truth": {
+        "verdict": "PARTIALLY_CORRECT",
+        "correctness_score": 7,
+        "depth_score": 5,
+        "correct_points": [
+          "Critical section is where shared variables are updated",
+          "Race condition happens when concurrent threads interleave updates causing corrupted values",
+          "Locking is a solution"
+        ],
+        "missing_core_concepts": [
+          "Formal three requirements: Mutual Exclusion, Progress, Bounded Waiting"
+        ],
+        "deeper_concepts_to_probe": [
+          "Bounded waiting and starvation"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Understood the practical programming issue and race condition mechanics."
+          },
+          {
+            "evidence_type": "REASONING",
+            "status": "PARTIALLY_DEMONSTRATED",
+            "evidence_from_answer": "Did not cite the theoretical solution criteria (Progress, Bounded Waiting)."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "A valid solution to the critical section problem must satisfy three requirements: Mutual Exclusion, Progress, and Bounded Waiting",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Good practical understanding of race conditions, but missed the formal three criteria (Mutual Exclusion, Progress, Bounded Waiting)."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 8,\n  \"Conceptual_Depth\": 6,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 4,\n    \"REASONING\": 3,\n    \"APPLICATION\": 3,\n    \"EDGE_CASE\": 1\n  },\n  \"Core_Concepts_Covered\": [\"Critical Section Problem\", \"Race Condition\"],\n  \"Core_Concepts_Missing\": [\"Mutex Locks\", \"Semaphores\", \"Deadlock\"],\n  \"Technical_Misconceptions\": [\"The candidate did not mention that Race Conditions can occur in non-shared resource scenarios, such as when two threads access a shared variable in a non-shared resource context.\"],\n  \"Grounding\": [\n    \"[1] The Critical Section is a segment of code where multiple concurrent threads/processes access shared resources (such as global memory or files). A Race Condition occurs when the outcome of concurrent execution depends unpredictably on the non-deterministic interleaving or timing of thread execution. A valid solution to the critical section problem must satisfy three requirements: Mutual Exclusion, Progress, and Bounded Waiting.\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 8,
+        "Conceptual_Depth": 6,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 4,
+          "REASONING": 3,
+          "APPLICATION": 3,
+          "EDGE_CASE": 1
+        },
+        "Core_Concepts_Covered": [
+          "Critical Section Problem",
+          "Race Condition"
+        ],
+        "Core_Concepts_Missing": [
+          "Mutex Locks",
+          "Semaphores",
+          "Deadlock"
+        ],
+        "Technical_Misconceptions": [
+          "The candidate did not mention that Race Conditions can occur in non-shared resource scenarios, such as when two threads access a shared variable in a non-shared resource context."
+        ],
+        "Grounding": [
+          "[1] The Critical Section is a segment of code where multiple concurrent threads/processes access shared resources (such as global memory or files). A Race Condition occurs when the outcome of concurrent execution depends unpredictably on the non-deterministic interleaving or timing of thread execution. A valid solution to the critical section problem must satisfy three requirements: Mutual Exclusion, Progress, and Bounded Waiting."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':... and Bounded Waiting.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "PARTIALLY_CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 7,
+      "predicted_depth_score": null,
+      "true_depth_score": 5
+    },
+    {
+      "sample_index": 11,
+      "question_id": "OS_08",
+      "subject": "OS",
+      "latency_seconds": 2.41,
+      "ground_truth": {
+        "verdict": "INCORRECT",
+        "correctness_score": 1,
+        "depth_score": 1,
+        "correct_points": [],
+        "missing_core_concepts": [
+          "Critical section and race conditions are multi-threaded concurrency synchronization concepts"
+        ],
+        "deeper_concepts_to_probe": [
+          "Concurrency fundamentals"
+        ],
+        "misconceptions": [
+          "Confusing critical section with blue screen crash and race conditions with clock frequencies"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "NOT_DEMONSTRATED",
+            "evidence_from_answer": "Total confusion with crash screens and hardware bus speeds."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "Critical Section is a segment of code where multiple concurrent threads/processes access shared resources",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Complete failure to understand concurrency synchronization."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 3,\n  \"ConceptualDepth\": 2,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 1,\n    \"REASONING\": 1,\n    \"APPLICATION\": 1,\n    \"EDGE_CASE\": 0\n  },\n  \"CoreConceptsCovered\": [\"Critical Section\", \"Race Condition\"],\n  \"CoreConceptsMissing\": [\"Mutual Exclusion\", \"Progress\", \"Bounded Waiting\"],\n  \"TechnicalMisconceptions\": [\"Critical Section is related to Windows crashing\", \"Race Condition is related to RAM speed\"],\n  \"Grounding\": []\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 3,
+        "ConceptualDepth": 2,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 1,
+          "REASONING": 1,
+          "APPLICATION": 1,
+          "EDGE_CASE": 0
+        },
+        "CoreConceptsCovered": [
+          "Critical Section",
+          "Race Condition"
+        ],
+        "CoreConceptsMissing": [
+          "Mutual Exclusion",
+          "Progress",
+          "Bounded Waiting"
+        ],
+        "TechnicalMisconceptions": [
+          "Critical Section is related to Windows crashing",
+          "Race Condition is related to RAM speed"
+        ],
+        "Grounding": []
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...peed'], 'Grounding': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "INCORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 1,
+      "predicted_depth_score": null,
+      "true_depth_score": 1
+    },
+    {
+      "sample_index": 12,
+      "question_id": "CN_08",
+      "subject": "CN",
+      "latency_seconds": 6.29,
+      "ground_truth": {
+        "verdict": "CORRECT",
+        "correctness_score": 10,
+        "depth_score": 9,
+        "correct_points": [
+          "DNS resolution to translate domain to IP",
+          "TCP 3-way handshake on port 443",
+          "TLS handshake for encrypted session establishment",
+          "HTTP GET request over TLS",
+          "Server HTTP 200 response with payload",
+          "Browser DOM/CSSOM parsing, layout, and rendering"
+        ],
+        "missing_core_concepts": [],
+        "deeper_concepts_to_probe": [
+          "HTTP/2 or HTTP/3 multiplexing over QUIC (UDP)",
+          "CDN edge caching and reverse proxy load balancing"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Covered DNS, TCP, TLS, HTTP, and browser rendering in exact chronological sequence."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "DNS Resolution... TCP 3-Way Handshake... TLS Handshake... HTTP GET Request... Server Processing & HTTP 200 Response... Browser Rendering",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Comprehensive, chronological, and technically accurate end-to-end breakdown across all networking and application phases."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 10,\n  \"ConceptualDepth\": 9,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 8,\n    \"REASONING\": 9,\n    \"APPLICATION\": 8,\n    \"EDGE_CASE\": 7\n  },\n  \"CoreConceptsCovered\": [\n    \"DNS Resolution\",\n    \"TCP Handshake\",\n    \"TLS Handshake\",\n    \"HTTP Request\",\n    \"Browser Rendering\"\n  ],\n  \"CoreConceptsMissing\": [\n    \"HTTP/2 or other HTTP version handling\",\n    \"CDN usage\",\n    \"WebSockets\",\n    \"HTTP/1.1 Upgrade to HTTP/2\"\n  ],\n  \"TechnicalMisconceptions\": [\n    \"The candidate correctly identified the DNS resolution process but missed the HSTS (HTTP Strict Transport Security) check, which is a fundamental aspect of modern web security.\"\n  ],\n  \"Grounding\": [\n    \"[1] The web request lifecycle entails: 1. URL Parsing & HSTS check. 2. DNS Resolution: browser/OS cache checked, followed by recursive resolver to obtain IP. 3. TCP 3-Way Handshake: SYN, SYN-ACK, ACK establishing Layer 4 connection on port 443. 4. TLS Handshake: certificate validation, key exchange, establishing symmetric encrypted session. 5. HTTP GET Request: sent over encrypted TLS channel. 6. Server Processing & HTTP 200 Response: HTML/CSS/JS transmitted. 7. Browser Rendering: DOM & CSSOM trees constructed, layout computed, and page painted.\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 10,
+        "ConceptualDepth": 9,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 8,
+          "REASONING": 9,
+          "APPLICATION": 8,
+          "EDGE_CASE": 7
+        },
+        "CoreConceptsCovered": [
+          "DNS Resolution",
+          "TCP Handshake",
+          "TLS Handshake",
+          "HTTP Request",
+          "Browser Rendering"
+        ],
+        "CoreConceptsMissing": [
+          "HTTP/2 or other HTTP version handling",
+          "CDN usage",
+          "WebSockets",
+          "HTTP/1.1 Upgrade to HTTP/2"
+        ],
+        "TechnicalMisconceptions": [
+          "The candidate correctly identified the DNS resolution process but missed the HSTS (HTTP Strict Transport Security) check, which is a fundamental aspect of modern web security."
+        ],
+        "Grounding": [
+          "[1] The web request lifecycle entails: 1. URL Parsing & HSTS check. 2. DNS Resolution: browser/OS cache checked, followed by recursive resolver to obtain IP. 3. TCP 3-Way Handshake: SYN, SYN-ACK, ACK establishing Layer 4 connection on port 443. 4. TLS Handshake: certificate validation, key exchange, establishing symmetric encrypted session. 5. HTTP GET Request: sent over encrypted TLS channel. 6. Server Processing & HTTP 200 Response: HTML/CSS/JS transmitted. 7. Browser Rendering: DOM & CSSOM trees constructed, layout computed, and page painted."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 10,
+      "predicted_depth_score": null,
+      "true_depth_score": 9
+    },
+    {
+      "sample_index": 13,
+      "question_id": "CN_08",
+      "subject": "CN",
+      "latency_seconds": 6.6,
+      "ground_truth": {
+        "verdict": "PARTIALLY_CORRECT",
+        "correctness_score": 5,
+        "depth_score": 4,
+        "correct_points": [
+          "DNS resolution to find IP",
+          "Sends request to server",
+          "Server returns web page to display"
+        ],
+        "missing_core_concepts": [
+          "TCP 3-way handshake on port 443",
+          "TLS/SSL cryptographic handshake for HTTPS",
+          "Browser rendering pipeline (DOM/CSSOM/paint)"
+        ],
+        "deeper_concepts_to_probe": [
+          "TCP and TLS handshakes"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "PARTIALLY_DEMONSTRATED",
+            "evidence_from_answer": "Captured general workflow but completely skipped TCP and TLS handshake layers."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "TCP 3-Way Handshake: SYN, SYN-ACK, ACK... TLS Handshake: certificate validation, key exchange",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Omitted the two most important networking phases: the TCP 3-way handshake and the TLS security handshake."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 7,\n  \"Conceptual_Depth\": 6,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 3,\n    \"REASONING\": 2,\n    \"APPLICATION\": 1,\n    \"EDGE_CASE\": 0\n  },\n  \"Core_Concepts_Covered\": [\"DNS Resolution\", \"TCP 3-Way Handshake\", \"TLS Handshake\", \"HTTP GET Request\", \"Server Processing\", \"Browser Rendering\"],\n  \"Core_Concepts_Missing\": [\"URL Parsing & HSTS Check\", \"Certificate Validation\", \"Key Exchange\", \"Encrypted Session\"],\n  \"Technical_Misconceptions\": [\"The candidate did not mention URL Parsing and HSTS Check, which are crucial steps in the web request lifecycle. They also did not mention Certificate Validation and Key Exchange, which are part of the TLS Handshake. However, they correctly mentioned DNS Resolution, TCP 3-Way Handshake, HTTP GET Request, Server Processing, and Browser Rendering.\"],\n  \"Grounding\": [\n    \"[1] The web request lifecycle entails: 1. URL Parsing & HSTS check. 2. DNS Resolution: browser/OS cache checked, followed by recursive resolver to obtain IP. 3. TCP 3-Way Handshake: SYN, SYN-ACK, ACK establishing Layer 4 connection on port 443. 4. TLS Handshake: certificate validation, key exchange, establishing symmetric encrypted session. 5. HTTP GET Request: sent over encrypted TLS channel. 6. Server Processing & HTTP 200 Response: HTML/CSS/JS transmitted. 7. Browser Rendering: DOM & CSSOM trees constructed, layout computed, and page painted.\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 7,
+        "Conceptual_Depth": 6,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 3,
+          "REASONING": 2,
+          "APPLICATION": 1,
+          "EDGE_CASE": 0
+        },
+        "Core_Concepts_Covered": [
+          "DNS Resolution",
+          "TCP 3-Way Handshake",
+          "TLS Handshake",
+          "HTTP GET Request",
+          "Server Processing",
+          "Browser Rendering"
+        ],
+        "Core_Concepts_Missing": [
+          "URL Parsing & HSTS Check",
+          "Certificate Validation",
+          "Key Exchange",
+          "Encrypted Session"
+        ],
+        "Technical_Misconceptions": [
+          "The candidate did not mention URL Parsing and HSTS Check, which are crucial steps in the web request lifecycle. They also did not mention Certificate Validation and Key Exchange, which are part of the TLS Handshake. However, they correctly mentioned DNS Resolution, TCP 3-Way Handshake, HTTP GET Request, Server Processing, and Browser Rendering."
+        ],
+        "Grounding": [
+          "[1] The web request lifecycle entails: 1. URL Parsing & HSTS check. 2. DNS Resolution: browser/OS cache checked, followed by recursive resolver to obtain IP. 3. TCP 3-Way Handshake: SYN, SYN-ACK, ACK establishing Layer 4 connection on port 443. 4. TLS Handshake: certificate validation, key exchange, establishing symmetric encrypted session. 5. HTTP GET Request: sent over encrypted TLS channel. 6. Server Processing & HTTP 200 Response: HTML/CSS/JS transmitted. 7. Browser Rendering: DOM & CSSOM trees constructed, layout computed, and page painted."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "PARTIALLY_CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 5,
+      "predicted_depth_score": null,
+      "true_depth_score": 4
+    },
+    {
+      "sample_index": 14,
+      "question_id": "CN_08",
+      "subject": "CN",
+      "latency_seconds": 5.95,
+      "ground_truth": {
+        "verdict": "INCORRECT",
+        "correctness_score": 1,
+        "depth_score": 1,
+        "correct_points": [],
+        "missing_core_concepts": [
+          "URL navigation triggers DNS resolution, TCP handshake, TLS handshake, HTTP request/response, and browser rendering"
+        ],
+        "deeper_concepts_to_probe": [
+          "Internet protocol architecture"
+        ],
+        "misconceptions": [
+          "Confusing web browsing with electricity power plants"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "NOT_DEMONSTRATED",
+            "evidence_from_answer": "Complete technological absurdity."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "The web request lifecycle entails: 1. URL Parsing... 2. DNS Resolution... 3. TCP 3-Way Handshake",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Nonsensical answer with zero technical validity."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 5,\n  \"Conceptual_Depth\": 3,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 1,\n    \"REASONING\": 2,\n    \"APPLICATION\": 2,\n    \"EDGE_CASE\": 0\n  },\n  \"Core_Concepts_Covered\": [\n    \"DNS Resolution\",\n    \"TCP 3-Way Handshake\",\n    \"TLS Handshake\",\n    \"HTTP GET Request\",\n    \"Server Processing\",\n    \"Browser Rendering\"\n  ],\n  \"Core_Concepts_Missing\": [\n    \"Wi-Fi Signal Generation\",\n    \"Electricity Power Plant\",\n    \"Satellite Communication\"\n  ],\n  \"Technical_Misconceptions\": [\n    \"Believing Wi-Fi signal generation is handled by the browser or electricity power plant, which is incorrect.\"\n  ],\n  \"Grounding\": [\n    \"[1] The web request lifecycle entails: 1. URL Parsing & HSTS check. 2. DNS Resolution: browser/OS cache checked, followed by recursive resolver to obtain IP. 3. TCP 3-Way Handshake: SYN, SYN-ACK, ACK establishing Layer 4 connection on port 443. 4. TLS Handshake: certificate validation, key exchange, establishing symmetric encrypted session. 5. HTTP GET Request: sent over encrypted TLS channel. 6. Server Processing & HTTP 200 Response: HTML/CSS/JS transmitted. 7. Browser Rendering: DOM & CSSOM trees constructed, layout computed, and page painted.\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 5,
+        "Conceptual_Depth": 3,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 1,
+          "REASONING": 2,
+          "APPLICATION": 2,
+          "EDGE_CASE": 0
+        },
+        "Core_Concepts_Covered": [
+          "DNS Resolution",
+          "TCP 3-Way Handshake",
+          "TLS Handshake",
+          "HTTP GET Request",
+          "Server Processing",
+          "Browser Rendering"
+        ],
+        "Core_Concepts_Missing": [
+          "Wi-Fi Signal Generation",
+          "Electricity Power Plant",
+          "Satellite Communication"
+        ],
+        "Technical_Misconceptions": [
+          "Believing Wi-Fi signal generation is handled by the browser or electricity power plant, which is incorrect."
+        ],
+        "Grounding": [
+          "[1] The web request lifecycle entails: 1. URL Parsing & HSTS check. 2. DNS Resolution: browser/OS cache checked, followed by recursive resolver to obtain IP. 3. TCP 3-Way Handshake: SYN, SYN-ACK, ACK establishing Layer 4 connection on port 443. 4. TLS Handshake: certificate validation, key exchange, establishing symmetric encrypted session. 5. HTTP GET Request: sent over encrypted TLS channel. 6. Server Processing & HTTP 200 Response: HTML/CSS/JS transmitted. 7. Browser Rendering: DOM & CSSOM trees constructed, layout computed, and page painted."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...ed, and page painted.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "INCORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 1,
+      "predicted_depth_score": null,
+      "true_depth_score": 1
+    },
+    {
+      "sample_index": 15,
+      "question_id": "DSA_08",
+      "subject": "DSA",
+      "latency_seconds": 7.7,
+      "ground_truth": {
+        "verdict": "CORRECT",
+        "correctness_score": 10,
+        "depth_score": 9,
+        "correct_points": [
+          "Hash table provides O(1) average lookup/insert but lacks order",
+          "Hash table degrades under hash collisions and cannot do range queries",
+          "Balanced BST guarantees strict O(log n) worst-case bounds",
+          "Balanced BST maintains elements in sorted order enabling range queries and predecessor/successor lookups"
+        ],
+        "missing_core_concepts": [],
+        "deeper_concepts_to_probe": [
+          "Memory overhead: Tree node pointers (left, right, parent, color) vs Hash table array capacity",
+          "Java TreeMap (Red-Black) vs HashMap"
+        ],
+        "misconceptions": [],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Accurately contrasted O(1) average vs O(log n) worst-case guarantees."
+          },
+          {
+            "evidence_type": "REASONING",
+            "status": "DEMONSTRATED",
+            "evidence_from_answer": "Identified range queries and ordered traversal as the decisive trade-off."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "Hash Tables provide O(1) average-time... do not maintain sorted order... Balanced Binary Search Trees... provide strict O(log n) worst-case guarantees... while maintaining elements in sorted in-order traversal",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Clear, precise explanation covering average vs worst-case time bounds and ordered traversal trade-offs."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 10,\n  \"Conceptual_Depth\": 9,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 8,\n    \"REASONING\": 9,\n    \"APPLICATION\": 8,\n    \"EDGE_CASE\": 7\n  },\n  \"Core_Concepts_Covered\": [\"Hash Tables\", \"Balanced Binary Search Trees (BSTs)\", \"Red-Black Trees\", \"AVL Trees\", \"O(1) Time Complexity\", \"O(log n) Time Complexity\", \"Worst-Case Degradation\", \"Adversarial Hash Collisions\", \"Range Queries\", \"Min/Max Lookups\", \"Sorted Order\"],\n  \"Core_Concepts_Missing\": [\"Tree Traversal\", \"AVL Trees\", \"Red-Black Trees\"],\n  \"Technical_Misconceptions\": [\"The candidate correctly identified that Hash Tables do not maintain sorted order and cannot efficiently support range queries or min/max lookups, and that Balanced BSTs (like Red-Black Trees) maintain elements in sorted order and can perform range queries efficiently. However, the candidate did not mention that Red-Black Trees are a specific type of AVL Tree and that AVL Trees are a specific type of self-balancing BST. The candidate also did not mention that Red-Black Trees have a worst-case time complexity of O(log n) for insertion, deletion, and search, which is the same as AVL Trees.\"],\n  \"Grounding\": [\n    \"[1] Hash Tables provide O(1) average-time insertion, deletion, and search, but degrade to O(n) under heavy hash collisions (unless treeified) and do not maintain sorted order (cannot perform range queries or find min/max efficiently).\",\n    \"[2] Balanced Binary Search Trees (e.g. Red-Black Tree, AVL Tree) provide strict O(log n) worst-case guarantees for insertion, deletion, and search, while maintaining elements in sorted in-order traversal, enabling efficient range queries, floor/ceiling lookups, and order statistics.\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 10,
+        "Conceptual_Depth": 9,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 8,
+          "REASONING": 9,
+          "APPLICATION": 8,
+          "EDGE_CASE": 7
+        },
+        "Core_Concepts_Covered": [
+          "Hash Tables",
+          "Balanced Binary Search Trees (BSTs)",
+          "Red-Black Trees",
+          "AVL Trees",
+          "O(1) Time Complexity",
+          "O(log n) Time Complexity",
+          "Worst-Case Degradation",
+          "Adversarial Hash Collisions",
+          "Range Queries",
+          "Min/Max Lookups",
+          "Sorted Order"
+        ],
+        "Core_Concepts_Missing": [
+          "Tree Traversal",
+          "AVL Trees",
+          "Red-Black Trees"
+        ],
+        "Technical_Misconceptions": [
+          "The candidate correctly identified that Hash Tables do not maintain sorted order and cannot efficiently support range queries or min/max lookups, and that Balanced BSTs (like Red-Black Trees) maintain elements in sorted order and can perform range queries efficiently. However, the candidate did not mention that Red-Black Trees are a specific type of AVL Tree and that AVL Trees are a specific type of self-balancing BST. The candidate also did not mention that Red-Black Trees have a worst-case time complexity of O(log n) for insertion, deletion, and search, which is the same as AVL Trees."
+        ],
+        "Grounding": [
+          "[1] Hash Tables provide O(1) average-time insertion, deletion, and search, but degrade to O(n) under heavy hash collisions (unless treeified) and do not maintain sorted order (cannot perform range queries or find min/max efficiently).",
+          "[2] Balanced Binary Search Trees (e.g. Red-Black Tree, AVL Tree) provide strict O(log n) worst-case guarantees for insertion, deletion, and search, while maintaining elements in sorted in-order traversal, enabling efficient range queries, floor/ceiling lookups, and order statistics."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 10,
+      "predicted_depth_score": null,
+      "true_depth_score": 9
+    },
+    {
+      "sample_index": 16,
+      "question_id": "DSA_08",
+      "subject": "DSA",
+      "latency_seconds": 6.27,
+      "ground_truth": {
+        "verdict": "PARTIALLY_CORRECT",
+        "correctness_score": 5,
+        "depth_score": 4,
+        "correct_points": [
+          "Hash table is O(1) average",
+          "Binary search tree is O(log n)"
+        ],
+        "missing_core_concepts": [
+          "Balanced BST guarantees worst-case O(log n) whereas hash table can degrade",
+          "BST maintains sorted order allowing range queries, min/max, and predecessor/successor lookups",
+          "Naive belief that O(1) makes hash tables universally superior"
+        ],
+        "deeper_concepts_to_probe": [
+          "Range queries and ordered data"
+        ],
+        "misconceptions": [
+          "Believing hash table is universally superior for all scenarios"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "PARTIALLY_DEMONSTRATED",
+            "evidence_from_answer": "Recalled average Big-O, but held the misconception that hash tables are always superior."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "Balanced Binary Search Trees... maintain elements in sorted in-order traversal, enabling efficient range queries",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Recalled asymptotic average numbers, but completely overlooked ordered operations and worst-case guarantees, naively assuming hash table is always better."
+      },
+      "raw_response": "{\n  \"Technical_Correctness\": 8,\n  \"Conceptual_Depth\": 7,\n  \"SOLO_Taxonomy_Depth_Dimensions\": {\n    \"FUNDAMENTAL\": 6,\n    \"REASONING\": 7,\n    \"APPLICATION\": 6,\n    \"EDGE_CASE\": 5\n  },\n  \"Core_Concepts_Covered\": [\"Hash Table\", \"Balanced Binary Search Tree\", \"Red-Black Tree\", \"AVL Tree\", \"O(1) Time Complexity\", \"O(log n) Time Complexity\", \"Hash Collisions\", \"Range Queries\", \"Order Statistics\"],\n  \"Core_Concepts_Missing\": [\"Balanced Binary Search Tree (BBST) Types (e.g., Red-Black Tree, AVL Tree)\"],\n  \"Technical_Misconceptions\": [\"The candidate incorrectly assumes that hash tables are always better than balanced binary search trees in all situations, which is not true. They also incorrectly state that hash tables degrade to O(n) under heavy hash collisions, which is not accurate according to the reference material.\"],\n  \"Grounding\": [\n    \"[1] Hash Tables provide O(1) average-time insertion, deletion, and search, but degrade to O(n) under heavy hash collisions (unless treeified) and do not maintain sorted order (cannot perform range queries or find min/max efficiently).\",\n    \"[2] Balanced Binary Search Trees (e.g., Red-Black Tree, AVL Tree) provide strict O(log n) worst-case guarantees for insertion, deletion, and search, while maintaining elements in sorted in-order traversal, enabling efficient range queries, floor/ceiling lookups, and order statistics.\"\n  ]\n}",
+      "parsed_prediction": {
+        "Technical_Correctness": 8,
+        "Conceptual_Depth": 7,
+        "SOLO_Taxonomy_Depth_Dimensions": {
+          "FUNDAMENTAL": 6,
+          "REASONING": 7,
+          "APPLICATION": 6,
+          "EDGE_CASE": 5
+        },
+        "Core_Concepts_Covered": [
+          "Hash Table",
+          "Balanced Binary Search Tree",
+          "Red-Black Tree",
+          "AVL Tree",
+          "O(1) Time Complexity",
+          "O(log n) Time Complexity",
+          "Hash Collisions",
+          "Range Queries",
+          "Order Statistics"
+        ],
+        "Core_Concepts_Missing": [
+          "Balanced Binary Search Tree (BBST) Types (e.g., Red-Black Tree, AVL Tree)"
+        ],
+        "Technical_Misconceptions": [
+          "The candidate incorrectly assumes that hash tables are always better than balanced binary search trees in all situations, which is not true. They also incorrectly state that hash tables degrade to O(n) under heavy hash collisions, which is not accurate according to the reference material."
+        ],
+        "Grounding": [
+          "[1] Hash Tables provide O(1) average-time insertion, deletion, and search, but degrade to O(n) under heavy hash collisions (unless treeified) and do not maintain sorted order (cannot perform range queries or find min/max efficiently).",
+          "[2] Balanced Binary Search Trees (e.g., Red-Black Tree, AVL Tree) provide strict O(log n) worst-case guarantees for insertion, deletion, and search, while maintaining elements in sorted in-order traversal, enabling efficient range queries, floor/ceiling lookups, and order statistics."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'Technical_Correctness':...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "PARTIALLY_CORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 5,
+      "predicted_depth_score": null,
+      "true_depth_score": 4
+    },
+    {
+      "sample_index": 17,
+      "question_id": "DSA_08",
+      "subject": "DSA",
+      "latency_seconds": 5.49,
+      "ground_truth": {
+        "verdict": "INCORRECT",
+        "correctness_score": 1,
+        "depth_score": 1,
+        "correct_points": [],
+        "missing_core_concepts": [
+          "Both are fundamental data structures in computer science"
+        ],
+        "deeper_concepts_to_probe": [
+          "Data structures"
+        ],
+        "misconceptions": [
+          "Literal wordplay with no technical content"
+        ],
+        "evidence": [
+          {
+            "evidence_type": "FUNDAMENTAL",
+            "status": "NOT_DEMONSTRATED",
+            "evidence_from_answer": "Literal joke response."
+          }
+        ],
+        "citations": [
+          {
+            "claim": "Balanced Binary Search Trees (e.g. Red-Black Tree...)... Hash Tables provide",
+            "source_number": 1
+          }
+        ],
+        "reasoning": "Flippant joke answer with zero technical merit."
+      },
+      "raw_response": "{\n  \"TechnicalCorrectness\": 5,\n  \"ConceptualDepth\": 6,\n  \"SOLOTaxonomyDepthDimensions\": {\n    \"FUNDAMENTAL\": 3,\n    \"REASONING\": 4,\n    \"APPLICATION\": 4,\n    \"EDGE_CASE\": 3\n  },\n  \"CoreConceptsCovered\": [\"Binary Search Tree\", \"Hash Table\", \"Balanced Binary Search Tree (Red-Black Tree)\", \"Hash Collisions\", \"Sorted Order\", \"Range Queries\", \"Order Statistics\"],\n  \"CoreConceptsMissing\": [\"Agricultural Use of Binary Search Trees\", \"Dining Table Use of Hash Tables\"],\n  \"TechnicalMisconceptions\": [\"The candidate incorrectly stated that Binary Search Trees are used for growing real trees in agriculture and that Hash Tables are used for a dining table for dinner. This is a misconception about the practical applications of these data structures.\"],\n  \"Grounding\": [\n    \"[1] Hash Tables provide O(1) average-time insertion, deletion, and search, but degrade to O(n) under heavy hash collisions (unless treeified) and do not maintain sorted order (cannot perform range queries or find min/max efficiently). Balanced Binary Search Trees (e.g. Red-Black Tree, AVL Tree) provide strict O(log n) worst-case guarantees for insertion, deletion, and search, while maintaining elements in sorted in-order traversal, enabling efficient range queries, floor/ceiling lookups, and order statistics.\"\n  ]\n}",
+      "parsed_prediction": {
+        "TechnicalCorrectness": 5,
+        "ConceptualDepth": 6,
+        "SOLOTaxonomyDepthDimensions": {
+          "FUNDAMENTAL": 3,
+          "REASONING": 4,
+          "APPLICATION": 4,
+          "EDGE_CASE": 3
+        },
+        "CoreConceptsCovered": [
+          "Binary Search Tree",
+          "Hash Table",
+          "Balanced Binary Search Tree (Red-Black Tree)",
+          "Hash Collisions",
+          "Sorted Order",
+          "Range Queries",
+          "Order Statistics"
+        ],
+        "CoreConceptsMissing": [
+          "Agricultural Use of Binary Search Trees",
+          "Dining Table Use of Hash Tables"
+        ],
+        "TechnicalMisconceptions": [
+          "The candidate incorrectly stated that Binary Search Trees are used for growing real trees in agriculture and that Hash Tables are used for a dining table for dinner. This is a misconception about the practical applications of these data structures."
+        ],
+        "Grounding": [
+          "[1] Hash Tables provide O(1) average-time insertion, deletion, and search, but degrade to O(n) under heavy hash collisions (unless treeified) and do not maintain sorted order (cannot perform range queries or find min/max efficiently). Balanced Binary Search Trees (e.g. Red-Black Tree, AVL Tree) provide strict O(log n) worst-case guarantees for insertion, deletion, and search, while maintaining elements in sorted in-order traversal, enabling efficient range queries, floor/ceiling lookups, and order statistics."
+        ]
+      },
+      "is_valid_json": true,
+      "is_schema_valid": false,
+      "schema_error": "Pydantic Validation Error: 10 validation errors for AnswerEvaluation\nverdict\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrectness_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndepth_score\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncorrect_points\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmissing_core_concepts\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ndeeper_concepts_to_probe\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nmisconceptions\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nevidence\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\ncitations\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing\nreasoning\n  Field required [type=missing, input_value={'TechnicalCorrectness': ...and order statistics.']}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/missing",
+      "verdict_match": false,
+      "predicted_verdict": null,
+      "true_verdict": "INCORRECT",
+      "predicted_correctness_score": null,
+      "true_correctness_score": 1,
+      "predicted_depth_score": null,
+      "true_depth_score": 1
+    }
+  ]
+}

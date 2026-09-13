@@ -149,7 +149,7 @@ class EmbeddingRetriever:
 
         vectors = load_embeddings()
 
-        if vectors is None:
+        if vectors is None or len(vectors) != len(self.chunks):
             vectors = build_embeddings()
 
         # numpy array mein daal do, taaki hisaab tez ho

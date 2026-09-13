@@ -25,8 +25,8 @@ def main():
     parser.add_argument(
         "--base-model",
         type=str,
-        default="Qwen/Qwen2.5-7B-Instruct",
-        help="Hugging Face model ID (e.g. Qwen/Qwen2.5-7B-Instruct or meta-llama/Meta-Llama-3.1-8B-Instruct)"
+        default="Qwen/Qwen2.5-3B-Instruct",
+        help="Hugging Face model ID (e.g. Qwen/Qwen2.5-3B-Instruct)"
     )
     parser.add_argument("--data-dir", type=str, default="dataset", help="Directory containing train.jsonl & val.jsonl")
     parser.add_argument("--output-dir", type=str, default="./crackproof_qlora_adapter", help="Directory to save adapter")
@@ -45,20 +45,32 @@ def main():
     print(f"Loading environment for QLoRA training on: {args.base_model}")
 
     try:
+        import random
+        import numpy as np
         import torch
+        import transformers
         from datasets import load_dataset
         from transformers import (
             AutoModelForCausalLM,
             AutoTokenizer,
             BitsAndBytesConfig,
             TrainingArguments,
+            Trainer,
+            DataCollatorForSeq2Seq,
         )
         from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-        from trl import SFTTrainer
     except ImportError as e:
         print(f"\nMissing required ML training packages: {e}")
         print("Install them with:\n  pip install torch transformers peft trl bitsandbytes accelerate datasets\n")
         sys.exit(1)
+
+    # Set explicit random seeds for deterministic reproducibility
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(42)
+    transformers.set_seed(42)
 
     print("\n[1/5] Loading quantized 4-bit base model...")
     bnb_config = BitsAndBytesConfig(
@@ -109,54 +121,94 @@ def main():
         "lr_scheduler_type": "cosine",
         "logging_steps": 1,
         eval_key: "steps",
-        "eval_steps": 1,
+        "eval_steps": 2,
         "save_strategy": "steps",
-        "save_steps": 1,
+        "save_steps": 2,
         "save_total_limit": 2,
         "load_best_model_at_end": True,
         "metric_for_best_model": "eval_loss",
         "greater_is_better": False,
         "fp16": True,
         "report_to": "none",
+        "seed": 42,
+        "data_seed": 42,
     }
 
-    # Format ChatML with add_generation_prompt=False (target assistant message already present)
-    def format_prompts(batch):
+    # Completion-only loss masking:
+    # System, User, Question, Candidate Answer, and RAG Reference tokens -> labels = -100
+    # Assistant JSON completion tokens -> supervised token IDs
+    def tokenize_completion_only(batch):
+        input_ids_list = []
+        labels_list = []
+        attention_mask_list = []
+        max_seq_len = 2048
+
+        for messages in batch["messages"]:
+            prompt_messages = messages[:-1]
+            prompt_text = tokenizer.apply_chat_template(
+                prompt_messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+            full_text = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=False,
+            )
+
+            prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
+            full_ids = tokenizer(full_text, add_special_tokens=False)["input_ids"]
+
+            # Prompt tokens get label -100 (ignored in loss computation)
+            # Assistant completion tokens get their actual token IDs
+            labels = [-100] * len(prompt_ids) + full_ids[len(prompt_ids):]
+
+            if len(full_ids) > max_seq_len:
+                full_ids = full_ids[:max_seq_len]
+                labels = labels[:max_seq_len]
+
+            input_ids_list.append(full_ids)
+            labels_list.append(labels)
+            attention_mask_list.append([1] * len(full_ids))
+
         return {
-            "text": [
-                tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=False)
-                for msgs in batch["messages"]
-            ]
+            "input_ids": input_ids_list,
+            "labels": labels_list,
+            "attention_mask": attention_mask_list,
         }
 
-    train_data = dataset["train"].map(format_prompts, batched=True)
-    val_data = dataset["validation"].map(format_prompts, batched=True)
+    train_data = dataset["train"].map(
+        tokenize_completion_only,
+        batched=True,
+        remove_columns=dataset["train"].column_names,
+    )
+    val_data = dataset["validation"].map(
+        tokenize_completion_only,
+        batched=True,
+        remove_columns=dataset["validation"].column_names,
+    )
 
-    try:
-        from trl import SFTConfig
-        training_args = SFTConfig(
-            max_seq_length=2048,
-            dataset_text_field="text",
-            **training_kwargs
-        )
-        trainer = SFTTrainer(
-            model=model,
-            train_dataset=train_data,
-            eval_dataset=val_data,
-            tokenizer=tokenizer,
-            args=training_args,
-        )
-    except (ImportError, TypeError):
-        training_args = TrainingArguments(**training_kwargs)
-        trainer = SFTTrainer(
-            model=model,
-            train_dataset=train_data,
-            eval_dataset=val_data,
-            dataset_text_field="text",
-            max_seq_length=2048,
-            tokenizer=tokenizer,
-            args=training_args,
-        )
+    data_collator = DataCollatorForSeq2Seq(
+        tokenizer=tokenizer,
+        pad_to_multiple_of=8,
+        label_pad_token_id=-100,
+    )
+
+    training_args = TrainingArguments(**training_kwargs)
+    import inspect
+    trainer_kwargs = {
+        "model": model,
+        "train_dataset": train_data,
+        "eval_dataset": val_data,
+        "data_collator": data_collator,
+        "args": training_args,
+    }
+    if "processing_class" in inspect.signature(Trainer.__init__).parameters:
+        trainer_kwargs["processing_class"] = tokenizer
+    else:
+        trainer_kwargs["tokenizer"] = tokenizer
+
+    trainer = Trainer(**trainer_kwargs)
 
     trainer.train()
 

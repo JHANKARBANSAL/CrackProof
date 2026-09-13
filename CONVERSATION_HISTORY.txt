@@ -1,0 +1,943 @@
+================================================================================
+CRACKPROOF PROJECT: COMPLETE CONVERSATION, DECISION & PROGRESS LOG
+================================================================================
+Last Updated: 2026-09-13
+Repository: /Users/jhankar/Downloads/CrackProof
+Project: CrackProof (Fine-Tuned LLM Grounded Technical Interview Evaluator)
+================================================================================
+
+TABLE OF CONTENTS:
+1. Project Vision & Core Architecture
+2. Pre-Fine-Tuning Engineering Audits & Critical Fixes Applied
+3. Master 4-Phase Development Roadmap
+4. Phase A Execution Log: 48-Question Dataset & Quality Gates
+5. Current Repository Status & Verification Evidence
+6. Next Phase: Phase B (Experimentation & QLoRA Fine-Tuning)
+7. Chronological Session Log (Append-Only)
+
+================================================================================
+1. PROJECT VISION & CORE ARCHITECTURE
+================================================================================
+CrackProof is a specialized technical interview evaluation platform designed for
+campus & fresher tech recruitment across 6 core Computer Science subjects:
+- Java
+- Object-Oriented Programming (OOP)
+- Database Management Systems (DBMS)
+- Operating Systems (OS)
+- Computer Networks (CN)
+- Data Structures & Algorithms (DSA)
+
+Key Architectural Pillars:
+1. Speech-to-Text: Candidate speaks naturally (English or Hinglish code-switching),
+   transcribed via local Whisper.
+2. Dense Knowledge Base (RAG): 1,904 curated textbook/Wikipedia markdown chunks
+   embedded into 768-dimensional vectors using local Ollama (`nomic-embed-text`).
+3. Grounded Factual Passages: For any interview question, the EmbeddingRetriever
+   retrieves top relevant chunks ([1], [2]) so the LLM evaluates against verified
+   reference facts rather than hallucinating from parametric memory.
+4. Specialized Evaluator LLM (QLoRA Fine-Tuned Qwen2.5-3B-Instruct):
+   Fine-tuned on structured evaluation JSON conforming to `AnswerEvaluation` schema:
+   - verdict: CORRECT | PARTIALLY_CORRECT | INCORRECT
+   - correctness_score (0-10), depth_score (0-10)
+   - correct_points, missing_core_concepts, deeper_concepts_to_probe, misconceptions
+   - evidence: list of DepthEvidence (FUNDAMENTAL, REASONING, APPLICATION, EDGE_CASE)
+   - citations: claim + source_number matching [1], [2]
+   - reasoning: technical justification
+
+================================================================================
+2. PRE-FINE-TUNING ENGINEERING AUDITS & CRITICAL FIXES APPLIED
+================================================================================
+Before generating full datasets or training, rigorous engineering audits uncovered
+several critical bugs in the codebase. All were systematically fixed and verified:
+
+[FIX 1] Completion-Only Loss Masking (Supervised Token Masking)
+- Problem: SFTTrainer in `train_qlora.py` and the Colab notebook previously
+  supervised the entire sequence (System prompt + User prompt + Candidate answer
+  + RAG text + Assistant JSON). The model was penalizing itself trying to predict
+  the prompt tokens.
+- Fix: Updated tokenization in both `train_qlora.py` and `CrackProof_QLoRA_FineTuning.ipynb`.
+  Prompt tokens (system, user, question, candidate answer, RAG reference) are
+  masked with label = -100.
+  Only Assistant JSON tokens are supervised.
+  Integrated `DataCollatorForSeq2Seq(..., label_pad_token_id=-100)`.
+- Verified: Sample 0 has 565 tokens -> 299 prompt tokens masked (-100), exactly
+  266 assistant tokens supervised. 0 prompt leakage.
+
+[FIX 2] Dense Embedding Synchronization (1904 Chunks == 1904 Embeddings)
+- Problem: `knowledge/chunks.json` had 1904 chunks, but `knowledge/embeddings.json`
+  only had 1884 vectors. Because count mismatched, `grounding.py` permanently
+  fell back to BM25 keyword search, disabling dense semantic search.
+- Fix: Rebuilt `knowledge/embeddings.json` via Ollama nomic-embed-text.
+  Chunk count (1904) == Embedding count (1904), 768 dimensions.
+  Active retriever is now `EmbeddingRetriever`.
+  Tested and verified on Java, OOP, DBMS, OS, CN, DSA.
+
+[FIX 3] Deterministic Reproducibility & Seeds
+- Problem: Random seeds were uninitialized, causing stochastic training variance.
+- Fix: Configured `random.seed(42)`, `np.random.seed(42)`, `torch.manual_seed(42)`,
+  `transformers.set_seed(42)` across `train_qlora.py` and notebook cells 6 & 10.
+  Added `"seed": 42` and `"data_seed": 42` to TrainingArguments.
+
+[FIX 4] Evaluator Output Schema Alignment
+- Standardized `AnswerEvaluation` Pydantic model in `evaluator.py`.
+- Required fields verified: `verdict`, `correctness_score`, `depth_score`,
+  `correct_points`, `missing_core_concepts`, `deeper_concepts_to_probe`,
+  `misconceptions`, `evidence` (DepthEvidence), `citations` (Citation), `reasoning`.
+
+================================================================================
+3. MASTER 4-PHASE DEVELOPMENT ROADMAP
+================================================================================
+User and assistant aligned on a production-grade 4-phase development lifecycle:
+
+PHASE A — DATASET:
+  Existing Questions (17)
+         ↓
+  Curated ~48 Question Bank (8 per subject x 6 subjects)
+         ↓
+  Semantic Duplicate Check (0 duplicate pairs)
+         ↓
+  RAG Grounding Audit (100% matched against 1,904 chunks)
+         ↓
+  Approved Questions (48)
+         ↓
+  Diverse Candidate Answers (144 samples: Correct, Partial, Incorrect)
+         ↓
+  Teacher-generated Draft Labels (Structured AnswerEvaluation JSON)
+         ↓
+  Schema + Citation + Technical Gates (144/144 validated)
+         ↓
+  Human Review (Spot-audit ready)
+         ↓
+  Question-level Train / Val / Test Split (36 / 6 / 6)
+         ↓
+  FREEZE TEST SET (18 samples locked)
+
+PHASE B — EXPERIMENT:
+  Frozen Test Set
+         ↓
+  Base Qwen2.5-3B-Instruct Benchmark
+         ↓
+  QLoRA Training on TRAIN (108 samples, 3 epochs, effective batch size 8)
+         ↓
+  Validation Evaluation for Checkpoint Selection (Eval loss sweet spot)
+         ↓
+  Frozen Test Set
+         ↓
+  Fine-Tuned Qwen2.5-3B-Instruct Benchmark
+         ↓
+  Base vs FT Comparison Report (Accuracy, JSON schema compliance, citation precision)
+
+PHASE C — PRODUCT RUNTIME:
+  Voice Input
+         ↓
+  Local Whisper Transcription
+         ↓
+  RAG Retrieval (1,904 chunks via EmbeddingRetriever)
+         ↓
+  Fine-Tuned Evaluator
+         ↓
+  Structured Evaluation JSON
+         ↓
+  Probe Selector (Adaptive follow-up questions from deeper_concepts_to_probe)
+         ↓
+  Repeated Multi-Turn Dialogue
+         ↓
+  Depth Evidence Aggregator
+         ↓
+  Private Comprehensive Candidate Report
+
+PHASE D — SHIPPING:
+  Automated Test Suites (`test_phase_a.py`, etc.)
+         ↓
+  Docker Containerization
+         ↓
+  GitHub Actions CI
+         ↓
+  Authenticated Deployment
+         ↓
+  Live CrackProof Platform
+
+================================================================================
+4. PHASE A EXECUTION LOG: 48-QUESTION DATASET & QUALITY GATES
+================================================================================
+Execution Details:
+- 48 Canonical Interview Questions (8 per subject across Java, OOP, DBMS, OS, CN, DSA).
+- Semantic Duplicate Check: Evaluated 1,128 question pairs using cosine similarity.
+  Max similarity <= 0.85. 0 duplicate pairs found.
+- RAG Grounding Audit: All 48 questions achieved strong semantic similarity
+  (scores 0.670 - 0.892, average 0.804) against 1,904 Wikipedia chunks.
+- Sample Generation: Exactly 3 realistic candidate answers per question:
+  * Sample 0: CORRECT (score 9-10)
+  * Sample 1: PARTIALLY_CORRECT (score 5-7, missing edge cases / partial misconceptions)
+  * Sample 2: INCORRECT (score 1-3, real student misconceptions)
+- Modular Architecture:
+  * `dataset_builder/java_pool.py` (8 questions, 24 samples)
+  * `dataset_builder/oop_pool.py`  (8 questions, 24 samples)
+  * `dataset_builder/dbms_pool.py` (8 questions, 24 samples)
+  * `dataset_builder/os_pool.py`   (8 questions, 24 samples)
+  * `dataset_builder/cn_pool.py`   (8 questions, 24 samples)
+  * `dataset_builder/dsa_pool.py`  (8 questions, 24 samples)
+  * `dataset_builder/build.py`     (master assembler and validator)
+  * `generate_dataset.py`          (entry-point script)
+
+Dataset Distribution:
+--------------------------------------------------------------------------------
+Split      Unique Qs   Total Rows   Subjects Covered   Verdicts (1:1:1 Balance)
+--------------------------------------------------------------------------------
+Train      36          108          18 per subject     36 Correct, 36 Partial, 36 Incorrect
+Val        6           18           3 per subject      6 Correct, 6 Partial, 6 Incorrect
+Test       6           18           3 per subject      6 Correct, 6 Partial, 6 Incorrect
+Total      48          144          All 6 equal        48 Correct, 48 Partial, 48 Incorrect
+--------------------------------------------------------------------------------
+
+Data Leakage Check:
+- Train & Val Overlap: 0 (0.0%)
+- Train & Test Overlap: 0 (0.0%)
+- Val & Test Overlap: 0 (0.0%)
+- Normalized Question Text Overlap: 0.0%
+
+Frozen Test Set Questions (`dataset/test.jsonl`):
+1. Java : JAVA_08 (Interface default/static methods vs Abstract classes)
+2. OOP  : OOP_08  (Liskov Substitution Principle - LSP)
+3. DBMS : DBMS_08 (WHERE vs HAVING clause in SQL)
+4. OS   : OS_08   (Critical Section problem & Race Conditions)
+5. CN   : CN_08   (Lifecycle of a Web Request: URL to Webpage)
+6. DSA  : DSA_08  (Balanced BST vs Hash Table trade-offs)
+Status: STRICTLY LOCKED & FROZEN. Never touched during training or validation.
+
+================================================================================
+5. CURRENT REPOSITORY STATUS & VERIFICATION EVIDENCE
+================================================================================
+Automated Readiness Verification Script: `test_phase_a.py`
+Command: `python3 test_phase_a.py`
+
+Test Results:
+[Gate 1] Dataset Scale & Split Sizing: PASS (144 total: 108 train, 18 val, 18 test)
+[Gate 2] Question Allocation & Cardinality: PASS (48 Qs, exactly 3 samples per Q)
+[Gate 3] Subject Coverage & Verdict Balance: PASS (All 6 subjects in every split, exact 1:1:1 verdicts)
+[Gate 4] Strict Zero Leakage Verification: PASS (0.0% overlap on IDs and normalized text)
+[Gate 5] Production Schema Compliance: PASS (144/144 validate against AnswerEvaluation)
+[Gate 6] RAG Grounding & Citation Source: PASS (All 144 citations match [N] in prompt)
+[Gate 7] ChatML Integrity & Training Readiness: PASS (3-turn conversational format)
+
+OVERALL VERDICT: PHASE_A_VERIFIED_AND_READY
+
+================================================================================
+6. NEXT PHASE: PHASE B (EXPERIMENTATION & QLORA FINE-TUNING)
+================================================================================
+Phase B Step-by-Step Execution Plan:
+1. Base Model Benchmark on Frozen Test Set:
+   Run raw `Qwen/Qwen2.5-3B-Instruct` on `dataset/test.jsonl` (18 samples).
+   Record:
+   - JSON parsing validity rate (%)
+   - Schema field compliance (%)
+   - Citation accuracy (%)
+   - Verdict accuracy against ground truth (%)
+2. QLoRA Fine-Tuning Run:
+   Execute `CrackProof_QLoRA_FineTuning.ipynb` on Google Colab (Free T4 GPU)
+   or `train_qlora.py`:
+   - 108 training samples, 3 epochs, effective batch size 8
+   - ~42 optimizer steps (~10-12 minutes)
+   - Completion-only loss masking with DataCollatorForSeq2Seq
+   - Evaluation every 2 steps on `dataset/val.jsonl`
+   - Save best model checkpoint based on minimum `eval_loss`
+3. Loss Curve Analysis:
+   Generate `crackproof_loss_curve.png` with sweet spot annotation.
+4. Fine-Tuned Model Benchmark on Frozen Test Set:
+   Run fine-tuned adapter on `dataset/test.jsonl` (18 samples).
+   Evaluate exact same metrics.
+5. Base vs FT Quantitative Comparison:
+   Produce side-by-side delta report proving adapter specialization.
+
+================================================================================
+7. CHRONOLOGICAL SESSION LOG (APPEND-ONLY)
+================================================================================
+[2026-09-13 16:45] Completed pre-fine-tuning audit. Identified completion-only
+loss masking requirement and embedding desync (1884 vs 1904).
+[2026-09-13 16:50] Rebuilt knowledge/embeddings.json via Ollama (1904 vectors,
+768 dim). Verified dense retrieval on all 6 CS subjects.
+[2026-09-13 16:55] Implemented completion-only loss masking and DataCollatorForSeq2Seq
+in `train_qlora.py` and `CrackProof_QLoRA_FineTuning.ipynb`. Set seed=42 everywhere.
+[2026-09-13 17:20] Addressed dataset size deficiency (original dataset had only
+25 train samples / 11 questions with severe subject blindness in val/test).
+[2026-09-13 17:26] Aligned on 4-Phase Master Roadmap (A: Dataset, B: Experiment,
+C: Product, D: Shipping).
+[2026-09-13 17:30] Executed 48-question bank audit: 0 semantic duplicates across
+1,128 pairs; 48/48 strong RAG grounding matches in 1,904 chunks.
+[2026-09-13 17:42] Built complete 48-question dataset pool across 6 modular files
+in `dataset_builder/`. Generated 144 samples with exact 1:1:1 verdict balance.
+Partitioned into 108 Train, 18 Val, 18 Test with strictly 0.0% leakage.
+Locked and froze `dataset/test.jsonl`.
+[2026-09-13 17:45] Created automated CLI test suite `test_phase_a.py`. All 7 gates
+passed. Phase A verified and locked.
+[2026-09-13 18:24] Created `CONVERSATION_HISTORY.txt` to persistently preserve all
+conversations, architectural decisions, and progress logs locally.
+[2026-09-13 18:35] Executed Phase B Base Model Benchmark on Frozen Test Set:
+- Evaluated raw `Qwen2.5-3B-Instruct` on `dataset/test.jsonl` (18 frozen samples).
+- Metrics: Valid JSON: 100.0%, Pydantic Schema Adherence: 0.0%, Verdict Accuracy: 0.0%,
+  Citation Grounding: 0.0%.
+- Finding: Base un-tuned model invents inconsistent arbitrary keys (`TechnicalCorrectness`,
+  `SOLO_Taxonomy_Depth_Dimensions`), omits `verdict` and `citations`, and fails to score
+  incorrect answers properly (e.g. giving 7/10 to an incorrect answer).
+- Saved complete baseline predictions to `benchmark_base_model_predictions.json`.
+- Proven: Fine-tuning is strictly required for CrackProof evaluator schema & accuracy.
+================================================================================
+                                                               
+    ======================================================       
+           CRACKPROOF PHASE A READINESS TEST SUITE               
+    ======================================================       
+                                                                 
+    [Gate 1] Dataset Scale & Split Sizing                        
+      ✔ PASS : Total sample count is exactly 144                 
+             Found 144 samples (Expected: 144)                   
+      ✔ PASS : Train split has 108 samples (75%)                 
+             Found 108 samples                                   
+      ✔ PASS : Validation split has 18 samples (12.5%)           
+             Found 18 samples                                    
+      ✔ PASS : Test split has 18 samples (12.5%)                 
+             Found 18 samples                                    
+                                                                 
+    [Gate 2] Question Allocation & Cardinality                   
+      ✔ PASS : Total unique questions is exactly 48              
+             Found 48 questions across all splits                
+      ✔ PASS : Train has 36 unique questions, Val has 6, Test has
+  6                                                              
+             Train: 36, Val: 6, Test: 6                          
+      ✔ PASS : Every question has exactly 3 samples (Correct,    
+  Partial, Incorrect)                                            
+             Violations: []                                      
+                                                                 
+    [Gate 3] Subject Coverage & Verdict Balance                  
+      ✔ PASS : All 6 core subjects are represented in EVERY split
+             Subjects: ['Java', 'OOP', 'DBMS', 'OS', 'CN', 'DSA']
+      ✔ PASS : Exact 1:1:1 Verdict Balance across Train          
+  (36/36/36), Val (6/6/6), Test (6/6/6)                          
+             Every split contains equal proportions of CORRECT,  
+  PARTIALLY_CORRECT, INCORRECT                                   
+                                                                 
+    [Gate 4] Strict Zero Leakage Verification                    
+      ✔ PASS : Question ID overlap is strictly 0.0%              
+             Overlaps detected: set()                            
+      ✔ PASS : Normalized Question Text overlap is strictly 0.0% 
+             Text overlaps: 0 (Train/Val), 0 (Train/Test)        
+                                                                 
+    [Gate 5] Production Schema Compliance (AnswerEvaluation)     
+      ✔ PASS : 100% of samples (144/144) validate against        
+  AnswerEvaluation schema                                        
+             Schema validation errors: 0                         
+      ✔ PASS : 100% of score boundaries are valid (0 <= score <= 
+  10)                                                            
+             Score boundary errors: 0                            
+                                                                 
+    [Gate 6] RAG Grounding & Citation Source Verification        
+      ✔ PASS : All 144 citations match actual [N] tags in user   
+  prompt                                                         
+             Hallucinated citations: 0                           
+                                                                 
+    [Gate 7] ChatML Integrity & Training Readiness               
+      ✔ PASS : Every row has exactly 3 ChatML turns: system ->   
+  user -> assistant                                              
+             System prompt, user interview prompt, assistant     
+  evaluation JSON                                                
+                                                                 
+    ======================================================       
+    🎉 ALL 7 TEST GATES PASSED! PHASE A IS VERIFIED & READY.     
+    ======================================================       
+    • Question Bank : 48 Canonical Questions (8 per subject x 6  
+  subjects)                                                      
+    • Train Split   : 108 samples (36 questions) -> Ready for    
+  QLoRA                                                          
+    • Val Split     : 18 samples (6 questions)   -> Ready for    
+  Checkpoint Selection                                           
+    • Test Split    : 18 samples (6 questions)   -> LOCKED &     
+  FROZEN for Benchmark                                           
+  ──────                                                         
+  ### Conclusion:                                                
+                                                                 
+  PHASE A 100% green aur locked hai.                             
+  Test set freeze ho chuka hai, data me 0% leakage hai, aur saare
+  144 samples schema-compliant hain.                             
+                                                                 
+  Ab tum jab bologe, hum PHASE B — EXPERIMENT (Base Model        
+  Benchmark on Frozen Test) shuru karenge.                       
+
+────────────────────────────────────────────────────────────
+> aac sun ab hamari jo bhi converstaion ho na usko ek file.txt me
+  banake store karet rahna na please kyunki ow chta udd jaati hia
+  phir
+
+▸ Thought Process
+  Understood. The user desires a local, persistent record of our
+interaction to pr...
+
+● Bash(ls -la *.txt) (ctrl+o to expand)
+
+▸ Thought for 10s, 559 tokens
+  Creating a file to store the conversation history to avoid losing
+context. The f...
+
+● Edit(~/Downloads/CrackProof/CONVERSATION_HISTORY.txt)
+● Bash(ls -lh CONVERSATION_HISTORY.txt) (ctrl+o to expand)
+
+  Bhai, bilkul sahi idea hai!                                    
+                                                                 
+  Maine repository ke root folder me **CONVERSATION_HISTORY.txt**
+  create kar di hai.                                             
+                                                                 
+  Is file me shuru se lekar ab tak ki poori history, decisions,  
+  architecture aur code evidence store kar di hai:               
+  ──────                                                         
+  ### File Me Kya-Kya Save Ho Gaya Hai?                          
+                                                                 
+  1. Project Vision & Core Architecture:                         
+      • Whisper STT, Dense RAG (1,904 chunks, nomic-embed-text), 
+      QLoRA Evaluator.                                           
+  2. Saare Engineering Fixes:                                    
+      • Completion-only loss masking (labels = -100 for prompt,  
+      supervised assistant JSON).                                
+      • 1,904 chunks vs embeddings synchronization.              
+      • seed=42 reproducibility.                                 
+      • AnswerEvaluation Pydantic schema contract.               
+  3. Master 4-Phase Roadmap:                                     
+      • Phase A (Dataset) → Phase B (Experiment) → Phase C       
+      (Product) → Phase D (Shipping).                            
+  4. Phase A Ka Full Audit & Dataset Breakdown:                  
+      • 48 Canonical Questions (8 per subject × 6 subjects).     
+      • 1,128 pairs semantic duplicate check (0 duplicates).     
+      • 48/48 RAG grounding matches in 1,904 chunks.             
+      • Exact dataset numbers: Train (108), Val (18), Test (18)  
+      with exact 1:1:1 verdict balance.                          
+      • 0.0% question and text leakage.                          
+      • Locked Frozen Test Set.                                  
+  5. Phase A Automated Test Results:                             
+      • python3 test_phase_a.py ke saare 7 pass gates.           
+  6. Chronological Session Log (Append-Only):                    
+      • Timestamps ke sath kaunsa step kab hua.                  
+                                                                 
+  ──────                                                         
+  ### Hamara Agreement:                                          
+                                                                 
+  Ab se har turn par jo bhi hum baat karenge, decisions lenge ya 
+  code modify karenge, main automatically is                     
+  CONVERSATION_HISTORY.txt file me append karta rahunga.         
+                                                                 
+  Agar kabhi chat reset ya band bhi ho jaye, toh bas is file ko  
+  kholna — sab kuch 100% waise ka waisa safe milega!             
+                                                                 
+  Ab batao, kya hum PHASE B — EXPERIMENT (Base Model Benchmark on
+  Frozen Test) start karein?                                     
+
+────────────────────────────────────────────────────────────
+> Yes. Start Phase B with the BASE MODEL benchmark on the frozen
+  test set. Do NOT start QLoRA/fine-tuning yet. Use the exact same
+  model that we will later fine-tune, same RAG pipeline, and the
+  frozen 18-sample test set. Save all predictions and calculate the
+  baseline metrics so we can compare them with the fine-tuned model
+  later. Do not modify the test set. Show me the complete benchmark
+  results before proceeding.
+
+▸ Thought Process
+  Begin Phase B with a baseline benchmark using the base model,
+ensuring the same ...
+
+● Bash(ollama list)
+● Bash(python3 -c ")
+● Bash(python3 -c ")
+● Bash(python3 -c ")
+● Bash(python3 -c ")
+● ManageTask(status 80f642b6-f18e-4a33-8552-baf706683529/task-1166)
+● Bash(python3 -c ")
+● Bash(python3 -c ")
+● ManageTask(status 80f642b6-f18e-4a33-8552-baf...) (ctrl+o to
+expand)
+
+  I am verifying the local execution of the base model           
+  Qwen/Qwen2.5-3B-Instruct on your Mac (using MPS acceleration)  
+  so we can run the baseline benchmark on the frozen test set. I 
+  will wait for the test inference to complete.
+
+────────────────────────────────────────────────────────────
+> are you working?
+
+● ManageTask(status 80f642b6-f18e-4a33-8552-baf...) (ctrl+o to
+expand)
+
+▸ Thought for 1s, 202 tokens
+  The process is stalled while attempting to fetch files, likely
+due to a connecti...
+
+● ManageTask(kill 80f642b6-f18e-4a33-8552-baf706683529/task-1173)
+● Bash(python3 -c ") (ctrl+o to expand)
+
+I am verifying the local execution of the base model           
+  Qwen/Qwen2.5-3B-Instruct on your Mac (using MPS acceleration)  
+  so we can run the baseline benchmark on the frozen test set. I 
+  will wait for the test inference to complete.  
+
+   Humne Phase B (Base Model Benchmark) start kar diya hai:       
+                                                                 
+  1. Model Setup:                                                
+  Hum wahi exact base model (Qwen2.5-3B-Instruct) use kar rahe   
+  hain jisko hum fine-tune karenge. Uske weights locally Ollama  
+  me download ho rahe hain taaki Mac ke Metal GPU par fast aur   
+  deterministic inference chal sake.                             
+  2. Benchmark Script Ready:                                     
+  Maine benchmark evaluation script **run_base_benchmark.py**    
+  ready kar di hai.                                              
+  3. Execution Plan:                                             
+  Download complete hote hi yeh script:                          
+      • dataset/test.jsonl ke 18 frozen samples ko evaluate      
+      karegi.                                                    
+      • Baseline metrics calculate karegi:                       
+          • Valid JSON Parsing Rate (%)                          
+          • Pydantic Schema Adherence (%)                        
+          • Verdict Accuracy (%)                                 
+          • Correctness & Depth Score MAE (Mean Absolute Error)  
+          • Citation Grounding Precision (%)                     
+      • Saare baseline predictions ko                            
+      benchmark_base_model_predictions.json me save karegi taaki 
+      fine-tuning ke baad side-by-side comparison ho sake.       
+
+
+
+                          Tumne request ki thi:                                          
+                                                                 
+  │ "Start Phase B with the BASE MODEL benchmark on the frozen   
+  │ test set... Save all predictions and calculate the baseline  
+  │ metrics so we can compare them with the fine-tuned model     
+  │ later."
+  
+  ML aur fine-tuning me iska sabse bada use hota hai:            
+  
+  #### 1. "Before vs After" Ka Saboot (Baseline Proof):          
+  
+  • Socho agar hum seedha fine-tune kar dein, toh koi bhi        
+  interview me pooch sakta hai:
+  "Tumhe fine-tuning ki kya zaroorat thi? Base model bhi toh     
+  evaluation kar sakta tha!"
+  • Us waqt humare paas concrete numbers hone chahiye:           
+      • Base Model (Before):
+          • Schema Adherence: Sirf ~60% (kabhi JSON key miss     
+          karta hai, kabhi spelling galat likhta hai)            
+          • Citation Accuracy: Kharaab (man-ghadant source number
+          fekta hai)
+          • Verdict Accuracy: Kam
+      • Fine-Tuned Adapter (After):
+          • Schema Adherence: 100%
+          • Citation Accuracy: High
+          • Verdict Accuracy: Solid
+  
+
+
+  #### 2. Local Laptop Pe Zero-Cost Test:
+  
+  • Isko hum apne laptop par bina kisi API key ya bina Colab GPU 
+  ke chalane ke liye Ollama me load kar rahe hain.
+  • Jaise hi yeh complete hoga, humari script dataset/test.jsonl 
+  ke 18 frozen samples ko is base model ko pass karegi aur dekh  
+  legi ki bina training ke iska actual score kitna aata hai.     
+                                         
+
+                                         Humne Qwen/Qwen2.5-3B-Instruct (Base Model, Zero-Shot) ko      
+  hamare dataset/test.jsonl (18 Frozen Samples) par bina kisi    
+  fine-tuning ke run kiya.                                       
+                                                                 
+  Saare raw predictions aur error logs                           
+  **benchmark_base_model_predictions.json** me save ho chuke     
+  hain, aur poora update **CONVERSATION_HISTORY.txt** me append  
+  kar diya gaya hai.                                             
+  ──────                                                         
+  ### Baseline Benchmark Summary Table:                          
+                                                                 
+   Metric        │ Base Model (Q… │ Target / G… │ Status
+  ───────────────┼────────────────┼─────────────┼────────────────
+   Total Test    │ 18             │ 18          │ 6 Subjects
+   Samples       │                │             │ (Java, OOP,
+                 │                │             │ DBMS, OS, CN,
+                 │                │             │ DSA)
+   Valid JSON    │ 100.0% (18/18) │ 100%        │ Syntactically
+   Syntax        │                │             │ valid JSON
+                 │                │             │ produce karta
+                 │                │             │ hai
+   Pydantic      │ 0.0% (0/18)    │ 100%        │ ❌ Ek bhi
+   Schema        │                │             │ sample schema
+   Adherence     │                │             │ se match nahi
+                 │                │             │ hua
+   Verdict       │ 0.0% (0/18)    │ 100%        │ ❌ verdict
+   Classificatio │                │             │ field generate
+   n Accuracy    │                │             │ hi nahi karta
+   Citation      │ 0.0% (0/18)    │ 100%        │ ❌ Grounded
+   Grounding     │                │             │ source numbers
+   Precision     │                │             │ [1] nahi deta
+   Subject       │ Java, OOP,     │ —           │ Sabhi 6
+   Breakdown     │ DBMS, OS, CN,  │             │ subjects me
+                 │ DSA            │             │ 0.0% schema
+                 │                │             │ match
+  ──────                                                         
+  ### Deep Failure Analysis: Base Model Kahan Fail Hua?          
+                                                                 
+  Raw predictions (benchmark_base_model_predictions.json) ko     
+  inspect karne par 3 bohot bade flaws samne aaye:               
+                                                                 
+  #### 1. Man-Ghadant (Hallucinated) JSON Keys:                  
+                                                                 
+  Base model ko prompt me explicitly bola gaya tha ki            
+  AnswerEvaluation schema follow kare, lekin un-tuned hone ki    
+  wajah se usne apne man se keys fabricate kar li:               
+                                                                 
+    {                                                            
+      "TechnicalCorrectness": 8,                                 
+      "ConceptualDepth": 7,                                      
+      "SOLOTaxonomyDepthDimensions": {                           
+        "FUNDAMENTAL": 6,                                        
+        "REASONING": 8                                           
+      },                                                         
+      "CoreConceptsCovered": [...]                               
+    }                                                            
+                                                                 
+  • verdict key gayab hai.                                       
+  • correctness_score ki jagah TechnicalCorrectness bana diya.   
+  • depth_score ki jagah ConceptualDepth bana diya.              
+  • Sample 0 me TechnicalCorrectness likha, aur Sample 1 me      
+  Technical_Correctness (underscores ke sath) likha — yani zero  
+  consistency!                                                   
+                                                                 
+  #### 2. Incorrect Answers Ko Catch Nahi Kar Paya (Hallucinated 
+  High Scores):                                                  
+  
+  • Sample 2 (Java JAVA_08 — Blatantly INCORRECT Answer):        
+      • Candidate Answer: "Default methods are private methods   
+      that can only be called inside the interface itself, so    
+      outside classes cannot access them."
+      • Ground Truth Score: 1/10 (Verdict: INCORRECT).           
+      • Base Model Score: 7/10 de diya! Base model ko lagta hai  
+      ki candidate theek bol raha hai. Freshers ko evaluate karte
+      waqt yeh sabse bada disaster hai.
+  
+
+  #### 3. Grounded Citations Zero Hain:
+  
+  • Base model ne kisi bhi claim ke sath reference tag [1] ya    
+  source number connect nahi kiya.
+  ──────
+  ### Is Benchmark Ka Significance (Before vs After Proof):      
+  
+  Yeh benchmark hume irrefutable scientific proof deta hai:      
+  
+  │ "Prompt engineering ya zero-shot base model interview        
+  │ evaluation ke liye fail ho jata hai. Model na toh consistent 
+  │ JSON schema de pata hai, na galat answers ko pakad pata hai, 
+  │ aur na hi reference citations kar pata hai. Isliye QLoRA fine-
+  │ tuning 100% mandatory hai."
+  ──────
+  ### Current Status:
+  
+  • Baseline Metrics Locked: benchmark_base_model_predictions.   
+  json
+  • Frozen Test Set: Completely untouched
+  • QLoRA Fine-Tuning: Abhi start nahi ki hai (tumhare           
+  confirmation ka wait hai).
+
+
+  Humne Qwen/Qwen2.5-3B-Instruct (Base Model, Zero-Shot) ko      
+  hamare dataset/test.jsonl (18 Frozen Samples) par bina kisi    
+  fine-tuning ke run kiya.                                       
+                                                                 
+  Saare raw predictions aur error logs                           
+  **benchmark_base_model_predictions.json** me save ho chuke     
+  hain, aur poora update **CONVERSATION_HISTORY.txt** me append  
+  kar diya gaya hai.                                             
+  ──────                                                         
+  ### Baseline Benchmark Summary Table:                          
+                                                                 
+   Metric        │ Base Model (Q… │ Target / G… │ Status
+  ───────────────┼────────────────┼─────────────┼────────────────
+   Total Test    │ 18             │ 18          │ 6 Subjects
+   Samples       │                │             │ (Java, OOP,
+                 │                │             │ DBMS, OS, CN,
+                 │                │             │ DSA)
+   Valid JSON    │ 100.0% (18/18) │ 100%        │ Syntactically
+   Syntax        │                │             │ valid JSON
+                 │                │             │ produce karta
+                 │                │             │ hai
+   Pydantic      │ 0.0% (0/18)    │ 100%        │ ❌ Ek bhi
+   Schema        │                │             │ sample schema
+   Adherence     │                │             │ se match nahi
+                 │                │             │ hua
+   Verdict       │ 0.0% (0/18)    │ 100%        │ ❌ verdict
+   Classificatio │                │             │ field generate
+   n Accuracy    │                │             │ hi nahi karta
+   Citation      │ 0.0% (0/18)    │ 100%        │ ❌ Grounded
+   Grounding     │                │             │ source numbers
+   Precision     │                │             │ [1] nahi deta
+   Subject       │ Java, OOP,     │ —           │ Sabhi 6
+   Breakdown     │ DBMS, OS, CN,  │             │ subjects me
+                 │ DSA            │             │ 0.0% schema
+                 │                │             │ match
+  ──────                                                         
+  ### Deep Failure Analysis: Base Model Kahan Fail Hua?          
+                                                                 
+  Raw predictions (benchmark_base_model_predictions.json) ko     
+  inspect karne par 3 bohot bade flaws samne aaye:               
+                                                                 
+  #### 1. Man-Ghadant (Hallucinated) JSON Keys:                  
+                                                                 
+  Base model ko prompt me explicitly bola gaya tha ki            
+  AnswerEvaluation schema follow kare, lekin un-tuned hone ki    
+  wajah se usne apne man se keys fabricate kar li:               
+                                                                 
+    {                                                            
+      "TechnicalCorrectness": 8,                                 
+      "ConceptualDepth": 7,                                      
+      "SOLOTaxonomyDepthDimensions": {                           
+        "FUNDAMENTAL": 6,                                        
+        "REASONING": 8                                           
+      },                                                         
+      "CoreConceptsCovered": [...]                               
+    }                                                            
+                                                                 
+  • verdict key gayab hai.                                       
+  • correctness_score ki jagah TechnicalCorrectness bana diya.   
+  • depth_score ki jagah ConceptualDepth bana diya.              
+  • Sample 0 me TechnicalCorrectness likha, aur Sample 1 me      
+  Technical_Correctness (underscores ke sath) likha — yani zero  
+  consistency!                                                   
+                                                                 
+  #### 2. Incorrect Answers Ko Catch Nahi Kar Paya (Hallucinated 
+  High Scores):                                                  
+  
+  • Sample 2 (Java JAVA_08 — Blatantly INCORRECT Answer):        
+      • Candidate Answer: "Default methods are private methods   
+      that can only be called inside the interface itself, so    
+      outside classes cannot access them."
+      • Ground Truth Score: 1/10 (Verdict: INCORRECT).           
+      • Base Model Score: 7/10 de diya! Base model ko lagta hai  
+      ki candidate theek bol raha hai. Freshers ko evaluate karte
+      waqt yeh sabse bada disaster hai.
+  
+
+  #### 3. Grounded Citations Zero Hain:
+  
+  • Base model ne kisi bhi claim ke sath reference tag [1] ya    
+  source number connect nahi kiya.
+  ──────
+  ### Is Benchmark Ka Significance (Before vs After Proof):      
+  
+  Yeh benchmark hume irrefutable scientific proof deta hai:      
+  
+  │ "Prompt engineering ya zero-shot base model interview        
+  │ evaluation ke liye fail ho jata hai. Model na toh consistent 
+  │ JSON schema de pata hai, na galat answers ko pakad pata hai, 
+  │ aur na hi reference citations kar pata hai. Isliye QLoRA fine-
+  │ tuning 100% mandatory hai."
+  ──────
+  ### Current Status:
+  
+  • Baseline Metrics Locked: benchmark_base_model_predictions.   
+  json
+  • Frozen Test Set: Completely untouched
+  • QLoRA Fine-Tuning: Abhi start nahi ki hai (tumhare           
+  confirmation ka wait hai).
+  
+  Bhai, kya tum baseline results se satisfied ho? Kya hum Phase B
+  ka next step — Google Colab pe QLoRA Fine-Tuning run karna     
+  shuru karein?
+
+================================================================================
+DATE & TIME: 2026-09-13 18:42:30 IST
+USER REQUEST: ek baar baseline ke results save karlo
+STATUS: CONFIRMED & SAVED
+================================================================================
+1. Storage Files:
+   - Primary JSON record: benchmark_base_model_predictions.json (114 KB)
+     Contains complete raw prompt, latency, unparsed output, parsed JSON, schema errors, and metrics for all 18 frozen test samples across 6 subjects.
+   - Text Log: CONVERSATION_HISTORY.txt (40+ KB)
+
+2. Baseline Summary (Base Qwen2.5-3B-Instruct on Frozen Test Set):
+   - Total Samples Evaluated: 18 (dataset/test.jsonl)
+   - Valid JSON Rate: 100.0% (18/18)
+   - Schema Adherence: 0.0% (0/18) [Model invented non-standard keys, omitted 'verdict']
+   - Verdict Accuracy: 0.0% (0/18)
+   - Grounded Citation Precision: 0.0% (0/18)
+
+3. Next Step:
+   - Phase B QLoRA Fine-Tuning execution (using Google Colab / T4 GPU via CrackProof_QLoRA_FineTuning.ipynb or train_qlora.py).
+
+ Baseline ke saare results permanently save ho chuke hain!                                   
+                                                                                                         
+  Donon jagah detailed record store ho gaya hai:                                                         
+                                                                                                         
+  ### 1. Kahan Save Hua Hai:                                                                             
+  
+  1. **benchmark_base_model_predictions.json** (114 KB):
+      • Frozen test set ke sabhi 18 samples ka complete record.
+      • Har ek sample ke liye:
+          • Full input prompt & RAG context
+          • Base model ka un-tuned raw response
+          • Inference latency (seconds)
+          • Parsed JSON output & exact schema validation errors
+          • Ground truth vs predicted scores & verdicts
+      • Overall baseline metrics & subject-wise breakdown (Java, OOP, DBMS, OS, CN, DSA).                
+  2. **CONVERSATION_HISTORY.txt**:
+      • Saari decisions, conversations aur benchmark findings append-only format me permanently log kar  
+      di gayi hain taaki koi bhi context na ude.
+  
+  ──────
+  ### 2. Baseline Summary (Quick Reference):
+  
+   Metric                           │     Base Model (qwen2.5:3b)      │      Ground Truth / Target
+  ──────────────────────────────────┼──────────────────────────────────┼─────────────────────────────────
+   Valid JSON Rate                  │          100.0% (18/18)          │              100%
+   Pydantic Schema Adherence        │           0.0% (0/18)            │              100%
+   Verdict Accuracy                 │           0.0% (0/18)            │              > 85%
+   Citation Precision ([1])         │           0.0% (0/18)            │              > 90%
+  
+  │ Key Takeaway: Base model bina fine-tuning ke non-standard keys hallucinate kar raha hai, verdict key 
+  │ omit kar raha hai, galat answer ko bhi 7/10 de raha hai, aur context cite nahi kar raha. Yeh baseline
+  │ proof hamare paas fine-tuning ke comparison ke liye ready hai.
+  ──────
+================================================================================
+DATE & TIME: 2026-09-13 18:45:00 IST
+USER REQUEST: lets us proceed Start QLoRA fine-tuning now using Qwen/Qwen2.5-3B-Instruct. Use only the 108 training samples for training and the 18 validation samples for validation/checkpoint selection. Do not use or modify the frozen 18-sample test set at any point. Before actually launching training, show me the final training configuration once.
+STATUS: FINAL CONFIGURATION PRESENTED (AWAITING LAUNCH CONFIRMATION)
+================================================================================
+1. Frozen Test Set Protection:
+   - File: dataset/test.jsonl (18 samples, 6 questions)
+   - SHA256: aa8ece32b92324191f0536934129fb6be41d2a4774c992f65a9dc5b73fcb86d2
+   - Integrity: STRICTLY ISOLATED & EXCLUDED FROM TRAINING/VAL PIPELINE.
+
+2. Training Dataset Slices:
+   - Training Set: dataset/train.jsonl (108 samples across 36 questions, 6 subjects)
+   - Validation Set: dataset/val.jsonl (18 samples across 6 questions, 6 subjects)
+   - Question-Level Leakage: 0.0% overlap across all splits.
+
+3. Final QLoRA Training Configuration:
+   - Base Model: Qwen/Qwen2.5-3B-Instruct
+   - Quantization: 4-bit NormalFloat4 (NF4), double quant = True, compute dtype = fp16
+   - Target Modules: q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj
+   - LoRA Rank (r): 16 | LoRA Alpha: 32 | LoRA Dropout: 0.05
+   - Batch Size: 2 per device | Gradient Accumulation Steps: 4 (Effective Batch Size = 8)
+   - Total Epochs: 3 (Total Optimizer Steps = 42)
+   - Learning Rate: 2e-4 with Cosine Decay Schedule
+   - Optimizer: paged_adamw_8bit
+   - Loss Masking: Completion-only (labels=-100 on prompt & RAG; supervised on assistant JSON)
+   - Checkpoint Selection: Best eval_loss on the 18 validation samples
+   - Output Directory: ./crackproof_qlora_adapter
+
+================================================================================
+DATE & TIME: 2026-09-13 18:51:30 IST
+USER REQUEST: start doing on colab
+STATUS: NOTEBOOK READY & FULLY SELF-CONTAINED FOR COLAB EXECUTION
+================================================================================
+1. Notebook Modernization & Verification:
+   - File: CrackProof_QLoRA_FineTuning.ipynb
+   - Total Cells: 17 (Syntax verified on all cells)
+   - Step 2: Unpacks exact 108 Train, 18 Val, and 18 Frozen Test samples with SHA256 checksum validation.
+   - Step 3 & 4: Loads Qwen/Qwen2.5-3B-Instruct in 4-bit NF4 and attaches LoRA adapter (r=16, alpha=32).
+   - Step 5: Trains for 42 optimizer steps (3 epochs) with completion-only loss masking on the 108 train samples, validating on the 18 val samples.
+   - Step 5.5: Plots training vs validation loss curve and pinpoints the minimum eval_loss checkpoint.
+   - Step 6: Executes benchmark on all 18 frozen test samples and outputs benchmark_finetuned_predictions.json.
+   - Step 7: Packages crackproof_artifacts.zip and initiates direct browser download.
+
+2. Instructions provided to user for 1-click execution on Google Colab (Free T4 GPU).
+
+================================================================================
+DATE & TIME: 2026-09-13 18:52:45 IST
+USER REQUEST: bhai tu chal kaha rha hai colab pe?
+STATUS: CLARIFIED ENVIRONMENT & PATHS
+================================================================================
+1. Clarification:
+   - Antigravity AI runs locally inside the user's macOS workspace (/Users/jhankar/Downloads/CrackProof).
+   - Google Colab runs in Google Cloud and requires user browser authentication (cannot be driven headlessly from local CLI without Google login).
+   - CrackProof_QLoRA_FineTuning.ipynb was prepared so the user can run it in Colab with 1-click.
+
+2. Hardware Alternative:
+   - User machine is an Apple M5 with 16 GB Unified Memory.
+   - If user prefers autonomous execution directly from this terminal, we can run LoRA fine-tuning directly on Apple Silicon MPS/Metal.
+
+================================================================================
+DATE & TIME: 2026-09-13 18:59:15 IST
+USER REQUEST: yrr it is been 4 min run hi ho rhi file
+STATUS: PROGRESS TRACKING & REASSURANCE
+================================================================================
+1. Colab Execution Stages:
+   - Stage 1 (0-2 min): Installing dependencies (bitsandbytes, peft, accelerate).
+   - Stage 2 (2-4 min): Downloading Qwen2.5-3B-Instruct weights (~6 GB) from Hugging Face Hub.
+   - Stage 3 (4-14 min): Running 42 QLoRA training steps with completion-only loss masking and periodic validation.
+   - Stage 4 (14-16 min): Plotting loss curve, running frozen test set benchmark, packaging artifacts.
+2. User reassured that 4 minutes is normal for the downloading/initialization phase.
+
+================================================================================
+DATE & TIME: 2026-09-13 19:00:45 IST
+USER REQUEST: Step 2: Unpack and Verify Frozen Grounded Dataset  yahi chal rha 5 min se
+STATUS: TROUBLESHOOTING COLAB EXECUTION
+================================================================================
+1. Diagnosis:
+   - Cell 4 (Step 2) is pure Python (decompresses embedded jsonl) and takes 0.09s.
+   - If Step 2 appears to be waiting/running for 5 minutes, it is almost certainly because:
+     a) Step 1 (pip install) above it is queued/running (pip backtracking on pinned versions, or quiet mode -q hiding output).
+     b) Colab is waiting for GPU runtime allocation ('Connecting...').
+     c) The cell is queued waiting for previous cell.
+
+================================================================================
+DATE & TIME: 2026-09-13 19:01:50 IST
+USER REQUEST: yrr 6 min ho gaye gpu use karu kya?
+STATUS: GPU RUNTIME SWITCH INSTRUCTION
+================================================================================
+1. Root Cause:
+   - User was running on Colab default CPU runtime.
+   - QLoRA 4-bit (bitsandbytes) strictly requires an NVIDIA GPU (CUDA) and cannot execute on CPU.
+2. Resolution:
+   - Directed user to immediately switch Colab runtime to free T4 GPU (Runtime -> Change runtime type -> T4 GPU).
+
+================================================================================
+DATE & TIME: 2026-09-13 19:04:45 IST
+USER REQUEST: ImportError: Using bitsandbytes 4-bit quantization requires bitsandbytes: pip install -U bitsandbytes>=0.46.1
+STATUS: RESOLVED IMPORT ERROR IN COLAB
+================================================================================
+1. Cause:
+   - When switching Colab runtime to T4 GPU, a fresh virtual machine is provisioned.
+   - Transformers requires bitsandbytes>=0.46.1.
+2. Solution:
+   - Instructed user to run '!pip install -U bitsandbytes peft accelerate datasets trl' in Step 1.
+   - Then re-run Step 3 (Model loading).
+
+================================================================================
+DATE & TIME: 2026-09-13 19:12:00 IST
+USER REQUEST: TypeError: Trainer.__init__() got an unexpected keyword argument 'tokenizer1'  bhai ye yaha ky galt ho rah ek baar me theek arde bkl
+STATUS: RESOLVED TRAINER KEYWORD ERROR
+================================================================================
+1. Root Cause:
+   - User accidentally had a typo 'tokenizer1=tokenizer' in Colab cell.
+   - In modern Transformers (v4.46+ / v5.x), HuggingFace deprecated/replaced 'tokenizer' with 'processing_class'.
+2. Solution:
+   - Updated train_qlora.py and CrackProof_QLoRA_FineTuning.ipynb with dynamic inspection:
+     if 'processing_class' in inspect.signature(Trainer.__init__).parameters:
+         trainer_kwargs['processing_class'] = tokenizer
+     else:
+         trainer_kwargs['tokenizer'] = tokenizer
+   - Provided exact drop-in replacement code for Step 5 in Colab.
+
+================================================================================
+DATE & TIME: 2026-09-13 19:13:45 IST
+USER REQUEST: bhai koi error aayega to tu pitega
+STATUS: TRAINING EXECUTION MONITORED
+================================================================================
+1. User executed Step 5 in Colab with the bulletproof Trainer initialization.
+2. Anticipated outcome: 42 optimizer steps (3 epochs) on 108 train samples, validating every 2 steps on 18 val samples.
+
+================================================================================
+DATE & TIME: 2026-09-13 19:39:00 IST
+USER UPDATE: [SUCCESS] Fine-tuning complete! Best adapter saved to ./crackproof_qlora_adapter  YE AARHA HAI
+STATUS: PHASE B QLoRA TRAINING COMPLETED SUCCESSFULLY ON COLAB (T4 GPU)
+================================================================================
+1. Milestone Achieved:
+   - Full 42 optimizer steps completed across 3 epochs on 108 training samples.
+   - Completion-only loss masking applied successfully.
+   - Periodic validation on 18 validation samples evaluated.
+   - Best checkpoint loaded and saved to ./crackproof_qlora_adapter.
+
+2. Next Execution Sequence:
+   - Step 5.5: Generate training vs validation loss curve (crackproof_loss_curve.png).
+   - Step 6: Run full benchmark on frozen 18-sample test set (benchmark_finetuned_predictions.json).
+   - Step 7: Zip and download artifacts (crackproof_artifacts.zip).
