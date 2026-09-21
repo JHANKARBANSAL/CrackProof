@@ -46,7 +46,7 @@ def _get_retriever():
       try:
         from retriever_embed import EmbeddingRetriever
 
-        retriever = EmbeddingRetriever()
+        retriever = EmbeddingRetriever(auto_build=False)
 
         if retriever.chunks and len(retriever.vectors) == len(retriever.chunks):
             _retriever = retriever
@@ -113,6 +113,9 @@ def get_reference(question, topic, top_k=5):
     hogi, jaise pehle hoti thi.
     """
 
+    global _retriever
+    topic = {"computer networks": "CN", "operating systems": "OS",
+             "object oriented programming": "OOP", "data structures & algorithms": "DSA"}.get(topic.strip().lower(), topic)
     retriever = _get_retriever()
 
     if retriever is None:
@@ -123,7 +126,12 @@ def get_reference(question, topic, top_k=5):
 
     except Exception as error:
         print("  (reference dhoondhne mein dikkat:", error, ")")
-        return "", []
+        try:
+            from retriever_bm25 import BM25Retriever
+            _retriever = BM25Retriever()
+            results = _retriever.search(question, subject=topic, top_k=top_k)
+        except Exception:
+            return "", []
 
     if not results:
         return "", []

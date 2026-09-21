@@ -22,17 +22,20 @@ Dono ek hi neeche wale modules par khade hain.
 import json
 import os
 from datetime import datetime
+from uuid import uuid4
 
 from question_generator import (
     generate_first_question,
     generate_continuation_question
 )
 from transcriber import transcribe_audio
-from evaluator import evaluate_answer
+from evaluator import evaluate_answer, AnswerEvaluation
 from probe_selector import select_probe_strategy
 from followup_generator import generate_followup
 from grounding import get_reference
 from reporting import build_report
+from depth_aggregator import aggregate_depth_evidence
+from assessment_metrics import calculate_batch_metrics
 
 
 RECORDINGS_DIR = "recordings"
@@ -46,14 +49,13 @@ class InterviewSession:
 
         self.topic = topic
 
-        self.interview_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.interview_id = uuid4().hex
+        self.created_at = datetime.now().isoformat()
 
         self.folder = os.path.join(
             RECORDINGS_DIR,
             "interview_" + self.interview_id
         )
-
-        os.makedirs(self.folder, exist_ok=True)
 
         self.history = []
 
@@ -69,6 +71,41 @@ class InterviewSession:
         self.question = generate_first_question(topic)
 
         self.finished = False
+        self.question_evaluated = False
+        self.report_cache = None
+
+    def snapshot(self):
+        return {
+            "interview_id": self.interview_id, "created_at": self.created_at,
+            "topic": self.topic, "question": self.question,
+            "question_number": self.question_number, "batch_start": self.batch_start,
+            "attempt": self.attempt, "finished": self.finished,
+            "question_evaluated": self.question_evaluated, "report_cache": self.report_cache,
+            "history": [dict(t, evaluation=t["evaluation"].model_dump()) for t in self.history],
+        }
+
+    @classmethod
+    def restore(cls, state):
+        """Restore saved state without generating a new question."""
+        obj = cls.__new__(cls)
+        for key, value in state.items():
+            setattr(obj, key, value)
+        obj.folder = os.path.join(RECORDINGS_DIR, "interview_" + obj.interview_id)
+        obj.history = [dict(t, evaluation=AnswerEvaluation.model_validate(t["evaluation"]))
+                       for t in state["history"]]
+        return obj
+
+    def saved_report(self):
+        """A useful partial report, even before the final narrative is generated."""
+        if not self.history:
+            return None
+        profile = aggregate_depth_evidence(self.history)
+        return dict(self.report_cache or {
+            "ok": True, "topic": self.topic, "depth_profile": profile,
+            "metrics": calculate_batch_metrics(self.history, profile),
+            "assessment": None, "in_progress": True,
+            "limited_evidence": len(self.history) < QUESTIONS_PER_BATCH,
+        }, interview_id=self.interview_id, turns=self.snapshot()["history"])
 
     # ----------------------------------------------------
     # SAWAAL
@@ -91,8 +128,8 @@ class InterviewSession:
             "interview_id": self.interview_id,
             "topic": self.topic,
             "question": self.question,
-            "question_number": self.question_number + 1,
-            "batch_position": len(self.history) - self.batch_start + 1,
+            "question_number": self.question_number if self.question_evaluated else self.question_number + 1,
+            "batch_position": len(self.history) - self.batch_start + (0 if self.question_evaluated else 1),
             "questions_per_batch": QUESTIONS_PER_BATCH,
         }
 
@@ -159,6 +196,11 @@ class InterviewSession:
         history mein daal deta hai.
         """
 
+        if self.finished:
+            return {"ok": False, "message": "This interview has ended. Please start a new interview."}
+        if self.question_evaluated:
+            return self.evaluation_response()
+
         reference, sources = get_reference(self.question, self.topic)
 
         evaluation = evaluate_answer(
@@ -172,7 +214,7 @@ class InterviewSession:
                 "ok": False,
                 "message": (
                     "This answer could not be evaluated. "
-                    "Your recording is saved."
+                    "Your transcript is still available. Please try again."
                 ),
             }
 
@@ -194,10 +236,17 @@ class InterviewSession:
             "audio_file": audio_path,
             "grounded": bool(sources),
             "reference_sources": sources,
+            "timestamp": datetime.now().isoformat(),
         }
 
         self.history.append(turn)
-        self.save()
+        self.question_evaluated = True
+        self.report_cache = None
+        return self.evaluation_response()
+
+    def evaluation_response(self):
+        turn = self.history[-1]
+        evaluation, sources = turn["evaluation"], turn["reference_sources"]
 
         return {
             "ok": True,
@@ -216,12 +265,16 @@ class InterviewSession:
     def next_question(self):
         """Pichhle answer ke gap par agla sawaal banata hai."""
 
-        if not self.history:
+        if self.finished:
+            return {"ok": False, "message": "This interview has ended."}
+        if not self.history or not self.question_evaluated:
             return self.current_question()
+        if len(self.history) - self.batch_start >= QUESTIONS_PER_BATCH:
+            return {"ok": False, "message": "This batch is complete. Please view your report."}
 
         last = self.history[-1]
 
-        self.question = generate_followup(
+        question = generate_followup(
             topic=self.topic,
             question=last["question"],
             transcript=last["transcript"],
@@ -231,18 +284,29 @@ class InterviewSession:
             }
         )
 
+        if not question:
+            return {"ok": False, "message": "Could not generate the next question. Please try again."}
+        self.question = question
+        self.question_evaluated = False
         return self.current_question()
 
     def continue_same_topic(self):
         """Batch khatam hone ke baad usi topic par aage badho."""
 
-        self.batch_start = len(self.history)
-
-        self.question = generate_continuation_question(
+        if not self.finished:
+            return {"ok": False, "message": "Finish the current batch before continuing."}
+        question = generate_continuation_question(
             topic=self.topic,
             interview_history=self.history
         )
 
+        if not question:
+            return {"ok": False, "message": "Could not generate a question. Please try again."}
+        self.question = question
+        self.batch_start = len(self.history)
+        self.finished = False
+        self.question_evaluated = False
+        self.report_cache = None
         return self.current_question()
 
     def change_topic(self, topic):
@@ -251,10 +315,18 @@ class InterviewSession:
         ye ek hi interview session hai.
         """
 
+        if not self.finished:
+            return {"ok": False, "message": "Finish the current batch before changing topics."}
+        question = generate_first_question(topic)
+        if not question:
+            return {"ok": False, "message": "Could not generate a question. Please try again."}
         self.topic = topic
         self.batch_start = len(self.history)
 
-        self.question = generate_first_question(topic)
+        self.question = question
+        self.finished = False
+        self.question_evaluated = False
+        self.report_cache = None
 
         return self.current_question()
 
@@ -270,11 +342,14 @@ class InterviewSession:
         kar liye hon - dono mein yahi chalta hai.
         """
 
-        batch = self.history[self.batch_start:]
-
-        self.finished = True
-
-        return as_plain_report(build_report(batch))
+        if self.report_cache:
+            return self.report_cache
+        result = as_plain_report(build_report(self.history[self.batch_start:]))
+        if result.get("ok"):
+            result["interview_id"] = self.interview_id
+            self.finished = True
+            self.report_cache = result
+        return result
 
     # ----------------------------------------------------
     # SAVE
@@ -289,6 +364,7 @@ class InterviewSession:
         path = os.path.join(self.folder, "interview_history.json")
 
         try:
+            os.makedirs(self.folder, exist_ok=True)
             rows = []
 
             for turn in self.history:
@@ -314,6 +390,7 @@ class InterviewSession:
 def as_plain_data(evaluation, sources):
 
     data = evaluation.model_dump()
+    data["sources"] = sources
 
     source_by_number = {}
     for source in sources:

@@ -1,0 +1,12 @@
+.git
+.env
+.secret_key
+*.db
+*.sqlite3
+venv
+node_modules
+__pycache__
+recordings
+review-artifacts
+mockup
+GADBAD

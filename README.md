@@ -68,18 +68,17 @@ which, because the two carry different weight.
 |---|---|
 | Evaluation and questions | Groq, `gpt-oss-120b` |
 | Speech to text | Groq Whisper `large-v3`, local Whisper as fallback |
-| Retrieval | 1884 chunks from 71 Wikipedia articles; local embeddings, BM25 fallback |
+| Retrieval | 1904 reference chunks; local embeddings, BM25 fallback |
 | Storage | Supabase Postgres, SQLite when running locally |
-| Recordings | The candidate's own browser, never the server |
-| Interface | Flask and plain JavaScript. No framework, no build step |
+| Recordings | Temporary upload for transcription; playback in the current browser page |
+| Interface | React 18, custom CSS, esbuild; Flask API |
 
 ## Running it locally
 
 ```bash
 pip install -r requirements.txt
-
-python3 corpus_fetcher.py     # download the knowledge base, once
-python3 knowledge_base.py     # split it into searchable chunks
+npm ci
+npm run build                # rebuild after editing ui/src
 
 python3 server.py             # http://localhost:5000
 ```
@@ -89,18 +88,33 @@ python3 server.py             # http://localhost:5000
 ```
 GROQ_API_KEY=...              # free at console.groq.com
 DATABASE_URL=...              # optional; SQLite is used without it
+SECRET_KEY=...                # required stable secret for deployed workers
 ```
 
 There is also a terminal version, `python3 main.py`, which is where
 the interview logic was first built and debugged.
 
+Active web interview state is stored in `interview_sessions`, alongside
+account history. Guest history is scoped to a signed browser cookie.
+Configured PostgreSQL outages return an error rather than silently switching
+to a different database. Old account reports remain readable; legacy guest
+records without ownership data are not exposed by guessed IDs.
+
+Local regression checks (AI responses are mocked in the web tests):
+
+```bash
+python3 -m unittest test_web -v
+python3 test_rag_pipeline.py
+node --test tests/ui-regression.mjs
+npm run build
+```
+
 ## Things decided deliberately
 
 **Recordings stay in the browser.** The evaluation runs on the
-transcript, so the audio has no job after transcription. It is kept in
-IndexedDB on the device that recorded it and the server deletes its
-copy immediately. Nobody's voice sits on a server, and playback still
-works where it was recorded.
+transcript. The server deletes its temporary audio file after transcription.
+The active React interface retains a playback blob for the current page;
+reloading or leaving the question does not preserve that audio.
 
 **The transcript is shown before it is graded, and can be edited.** If
 Whisper mishears a word, the candidate fixes it at that moment rather
@@ -124,3 +138,63 @@ scales.** They are labelled that way in the code, and `STRONG` means
 - Evaluation quality has been measured, not assumed: the same answer
   can still receive different verdicts across runs, which is why
   grounding was added and why the feedback control exists.
+
+## Resume & Role Setup
+
+Open **My Profile** or **Build my profile** from the dashboard. The flow is
+target role and experience → optional PDF resume → editable skills/projects →
+review and save. Manual entry works without an AI provider. Saved profiles are
+isolated by account or guest session; signing in does not migrate a guest profile.
+
+PDF extraction uses `pypdf` and the existing configured LLM with a Pydantic schema.
+The upload accepts text PDFs up to 5 MB and 10 pages; encrypted, malformed,
+image-only and oversized PDFs return a useful error. OCR is not implemented.
+Analysis sends extracted text to the configured AI provider. The app stores only
+the candidate-confirmed profile, not the PDF or raw extracted text. The AI provider's
+own retention rules still apply. Listed skills are self-reported, not proficiency scores.
+
+`GET/POST /api/profile` reads/saves the owner-scoped profile. `POST /api/resume/parse`
+accepts a multipart `resume` file and returns a preview without saving it.
+The additive `candidate_profiles` table is created at startup. Account deletion
+also removes the account's profile. This setup customizes the AI Panel described below;
+the existing core-CS knowledge interviews remain a separate practice mode.
+
+Run resume/profile checks with `python -m unittest test_candidate_profile -v`.
+
+The target role field includes 18 searchable suggestions and accepts custom roles.
+The optional **Check job description** action checks whether pasted text can guide
+an interview for the selected role. It identifies relevant requirements, missing
+detail, unrelated text, or a different role. Reviews clear when the role or text
+changes. Requirements are never automatically added to the candidate's skills.
+This is AI guidance, not a job-authenticity check, ATS score, or hiring prediction.
+`POST /api/profile/job-description` returns the review without saving the profile.
+
+The interface uses the existing React/esbuild setup, a shared `ui/design.css`
+visual layer, local Lucide icons, and two generated illustrations. See
+[design review and verification](design-review/README.md).
+
+## AI persona panel
+
+Open **AI Panel** after saving a profile. Three interviewer roles each ask two
+questions: Technical Interviewer, Project Reviewer and Hiring Manager. The existing
+LLM generates profile-aware questions, uses prior answers for follow-ups, and provides
+coaching feedback. This is one model with explicit persona prompts and a small state
+machine, not separately trained models or autonomous multi-agent orchestration.
+
+Candidates can type or record English answers, review transcripts, and submit.
+Browser speech synthesis can read questions aloud. Audio is turn-by-turn, not a
+continuous streaming call. Recordings stop after two minutes; server-side audio is
+temporary. The app saves submitted answers before requesting the next question,
+so AI failures can be retried without losing answers. The latest 20 sessions can be
+reopened from the panel page; panel sessions have their own history and are not
+included in knowledge-assessment progress scores.
+
+The profile snapshot, current question, transcript and report live in the
+owner-scoped `panel_sessions` table, with optimistic concurrency checks. Account
+deletion removes account panel sessions. The `/api/panels` routes support starting,
+resuming, answering, advancing and finishing early. Feedback is based only on
+submitted answers and is labelled AI coaching, not a hiring decision.
+
+Run panel tests with `python -m unittest test_panel -v`.
+See [AGORA_SETUP.md](AGORA_SETUP.md) for the proposed Agora streaming integration;
+Agora credentials and the live RTC integration are still outstanding.

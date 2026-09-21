@@ -3,6 +3,13 @@
 # HF Spaces Docker chalata hai. Ye file usko batati hai ki app kaise
 # banani aur chalani hai.
 
+FROM node:22-slim AS frontend
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY ui ./ui
+RUN npm run build
+
 FROM python:3.11-slim
 
 # Hugging Face container ko root ke bina chalata hai, isliye ek
@@ -24,6 +31,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # Ab baaki code
 COPY --chown=user . .
+COPY --from=frontend --chown=user /build/ui/app.bundle.js ./ui/app.bundle.js
 
 # HF Spaces 7860 par sunta hai
 ENV PORT=7860
@@ -35,6 +43,7 @@ EXPOSE 7860
 # timeout 180 isliye ki evaluation mein Groq ko kuch second lagte hain
 # aur usse pehle worker mara nahi jaana chahiye.
 CMD gunicorn server:app \
+    --preload \
     --bind 0.0.0.0:$PORT \
     --workers 2 \
     --timeout 180

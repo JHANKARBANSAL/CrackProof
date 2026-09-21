@@ -3,6 +3,8 @@ recordings
 __pycache__/
 *.pyc
 venv/
+node_modules/
+review-artifacts/
 
 # knowledge/ ka auto-downloaded content ignore, par haath se likhi
 # rubrics track hongi - woh dobara download nahi hotin

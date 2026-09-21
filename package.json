@@ -1,0 +1,13 @@
+{
+  "name": "crackproof-ui",
+  "version": "1.0.0",
+  "description": "CrackProof Frontend",
+  "scripts": {
+    "build": "esbuild ui/src/App.jsx --bundle --outfile=ui/app.bundle.js",
+    "watch": "esbuild ui/src/App.jsx --bundle --outfile=ui/app.bundle.js --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "lucide-static": "^1.47.0"
+  }
+}

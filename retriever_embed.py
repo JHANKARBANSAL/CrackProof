@@ -140,7 +140,7 @@ class EmbeddingRetriever:
     tarah se test kar sakein.
     """
 
-    def __init__(self, chunks=None):
+    def __init__(self, chunks=None, auto_build=True):
 
         if chunks is None:
             chunks = load_chunks()
@@ -150,6 +150,8 @@ class EmbeddingRetriever:
         vectors = load_embeddings()
 
         if vectors is None or len(vectors) != len(self.chunks):
+            if not auto_build:
+                raise ValueError("Embeddings are missing or out of sync with the knowledge base")
             vectors = build_embeddings()
 
         # numpy array mein daal do, taaki hisaab tez ho

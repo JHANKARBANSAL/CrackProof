@@ -29,6 +29,19 @@ jobs:
     - name: Run RAG & Knowledge Base Test Suite
       run: |
         python test_rag_pipeline.py
+        python -m unittest test_web test_candidate_profile test_panel -v
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Build and check frontend
+      run: |
+        npm ci
+        npm run build
+        node --test tests/ui-regression.mjs
 
     - name: Verify Web Server Initialisation
       run: |
